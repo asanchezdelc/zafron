@@ -2,6 +2,8 @@
 
 A rudenmentary and simple dashboard for devices such as Arduinos, ESP family, RaspberryPI. This project was brought up to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. It is a work in progress.
 
+<img src="https://github.com/asanchezdelc/zafron/blob/main/docs/lander.png?raw=true" alt="Lander" width="500"/>
+
 ## Requirements
 - NodeJS
 - MongoDB
