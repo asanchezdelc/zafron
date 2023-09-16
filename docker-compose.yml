@@ -1,0 +1,34 @@
+version: "3"
+services:
+  zafron:
+    restart: always
+    ports:
+      - '3000:3000'
+      - '1883:1883'
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/zafron
+    links:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - NODE_ENV=production
+      - DATABASE_URL=mongodb://mongodb:27017/zafron
+      - JWT_SECRET=secret
+    depends_on:
+      - mongodb
+      - redis
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - '6379:6379'
+    volumes: 
+      - ./data/cache:/data
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data/db:/data/db
