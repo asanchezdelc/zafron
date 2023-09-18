@@ -60,7 +60,7 @@ export const fetchOne = (id) => {
 };
 
 export const fetchReadings = (id, page, limit) => {
-  return request(`${baseURL}/${id}/readings?page=${page}&limit=${limit}`);
+  return request(`${baseURL}/${id}/measurements?page=${page}&limit=${limit}`);
 }
 
 export const fetchHistogram = (id) => {
@@ -69,4 +69,8 @@ export const fetchHistogram = (id) => {
 
 export const fetchLatest = (id) => {
   return request(`${baseURL}/${id}/latest`);
+}
+
+export const fetchMetric = (id, channel) => {
+  return request(`${baseURL}/${id}/metrics/${channel}`);
 }

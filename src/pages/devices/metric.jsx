@@ -1,8 +1,34 @@
 import { AreaChart, Text, Flex, Card, Metric, Button, Icon } from "@tremor/react";
 import { BoltIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
+import * as deviceAPI from "../../services/device";
+import { useState, useEffect } from "react";
+import { toFriendlyTime } from "../../services/utils";
 
+export default function MetricCard({ deviceId, capability, onAddCapability }) {
+  console.log(capability)
+  const [data, setData] = useState([]);
 
-export default function MetricCard({ capability, onAddCapability }) {
+  function transformData(data) {
+    return data.map(item => ({
+      date: toFriendlyTime(item.timestamp),
+      Measurement: item.value
+    }));
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await deviceAPI.fetchMetric(deviceId, capability.channel);
+      const chartData = transformData(result);
+      setData(chartData);
+    };
+
+    if (!capability.new) {
+      fetchData();
+    }
+
+    fetchData();
+  }, [deviceId, capability.channel, capability.new]);
+
   return (
     <Card decoration="top" decorationColor={capability.new ? 'green':'indigo'}>
       <Flex alignItems="start">
@@ -14,21 +40,20 @@ export default function MetricCard({ capability, onAddCapability }) {
         <Metric>{capability.value}</Metric>
         <Text>{capability.unit}</Text>        
       </Flex>
-      {/* <AreaChart
+      { !capability.new && (
+       <AreaChart
         className="mt-6 h-28"
         data={data}
-        index="Month"
-        valueFormatter={(number) =>
-          `$ ${Intl.NumberFormat("us").format(number).toString()}`
-        }
-        categories={['Sales']}
+        index="date"
+        valueFormatter={value => `${value.toFixed(2)} ${capability.unit}`}
+        categories={['Measurement']}
         colors={["blue"]}
         showXAxis={true}
         showGridLines={false}
         startEndOnly={true}
         showYAxis={false}
         showLegend={false}
-      /> */}
+      /> )}
     </Card>
   );
 }

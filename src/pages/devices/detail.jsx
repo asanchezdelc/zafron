@@ -178,7 +178,7 @@ export default function DeviceDetail() {
             {isLoading ? <Spinner /> : (
             <>{(!capabilities || capabilities.length === 0) && <Onboarding device={device} />}
             <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
-              { capabilities && capabilities.map((reading, index) => ( <MetricCard key={index} capability={reading} onAddCapability={onAddCapability} /> ))}
+              { capabilities && capabilities.map((reading, index) => ( <MetricCard key={index} deviceId={device._id} capability={reading} onAddCapability={onAddCapability} /> ))}
             </Grid>
             </>)}
           </TabPanel>
