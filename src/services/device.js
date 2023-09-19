@@ -26,8 +26,6 @@ const request = async (url, options = {}) => {
         throw new Error(data.error || "Request failed");
     }
 
-    console.log(response)
-
     return response.json();
 };
 
@@ -72,5 +70,5 @@ export const fetchLatest = (id) => {
 }
 
 export const fetchMetric = (id, channel) => {
-  return request(`${baseURL}/${id}/metrics/${channel}`);
+  return request(`${baseURL}/${id}/measurements/${channel}`);
 }

@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import { toFriendlyTime } from "../../services/utils";
 
 export default function MetricCard({ deviceId, capability, onAddCapability }) {
-  console.log(capability)
   const [data, setData] = useState([]);
 
   function transformData(data) {
