@@ -5,6 +5,7 @@ A rudenmentary and simple dashboard for devices such as Arduinos, ESP family, Ra
 **Work in progress.**
 
 <img src="https://github.com/asanchezdelc/zafron/blob/main/docs/lander.png?raw=true" alt="Lander" width="500"/>
+<img src="https://github.com/asanchezdelc/zafron/blob/main/docs/logs.png?raw=true" alt="Logs" width="500"/>
 
 ## Requirements
 - NodeJS
