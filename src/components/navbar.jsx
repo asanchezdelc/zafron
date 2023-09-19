@@ -40,7 +40,7 @@ export default function Navbar({ user }) {
                       rx="16"
                       fill="currentColor"
                     />
-                       <text x="16" y="22" font-family="Arial" font-size="20" fill="black" text-anchor="middle">Z</text>
+                       <text x="16" y="22" fontFamily="Arial" fontSize="20" fill="black" textAnchor="middle">Z</text>
                   </svg>
                 </div>
                 <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">

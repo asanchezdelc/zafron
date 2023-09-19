@@ -77,11 +77,11 @@ export default function DeviceDetail() {
 
   const getDevice = async () => {
     try {
-      console.log(params)
       const data = await devicesAPI.fetchOne(params.deviceId);
       setDevice(data);
       setCapabilities(data.capabilities);
       setIsLoading(false)
+      setStatus(data.lastOnline);
     } catch (err) {
       console.error("Error fetching device:", err);
     }
@@ -92,19 +92,20 @@ export default function DeviceDetail() {
       const data = await devicesAPI.fetchLatest(params.deviceId);
       const currentCapabilities = capabilitiesRef.current;
       const newCapabilities = [];
-      const channels = Object.keys(data.metadata);
 
-      setStatus(data.timestamp);
+      if (data.measurements) {
+        setUplink(new Date());
+      }
 
-      channels.forEach((channel) => {
-          data.metadata[channel].value = data.readings[channel];
-
-          const index = currentCapabilities.findIndex((item) => item.channel === data.metadata[channel].channel);
+      data.measurements.forEach((measurement) => {
+          let capability = measurement.metadata;
+          capability.value = measurement.value;
+          const index = currentCapabilities.findIndex((item) => item.channel === measurement.metadata.channel);
           if (index === -1) {
-              data.metadata[channel]["new"] = true;
-              newCapabilities.push(data.metadata[channel]);
+              capability.new = true;
+              newCapabilities.push(capability);
           }else{
-              currentCapabilities[index].value = data.readings[channel];
+              currentCapabilities[index].value = measurement.value;
           }
       });
       // Combine capabilitiesRef.current with newCapabilities and set to state
@@ -170,7 +171,7 @@ export default function DeviceDetail() {
         <TabGroup className="mt-6">
         <TabList>
           <Tab>Overview</Tab>
-          <Tab>Log</Tab>
+          <Tab>Logs</Tab>
           <Tab>Settings</Tab>
         </TabList>
         <TabPanels>
@@ -178,7 +179,7 @@ export default function DeviceDetail() {
             {isLoading ? <Spinner /> : (
             <>{(!capabilities || capabilities.length === 0) && <Onboarding device={device} />}
             <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
-              { capabilities && capabilities.map((reading, index) => ( <MetricCard key={index} capability={reading} onAddCapability={onAddCapability} /> ))}
+              { capabilities && capabilities.map((reading, index) => ( <MetricCard key={index} deviceId={device._id} capability={reading} onAddCapability={onAddCapability} /> ))}
             </Grid>
             </>)}
           </TabPanel>
@@ -189,7 +190,7 @@ export default function DeviceDetail() {
               <div className='mt-8'>
                   <Credentials clientId={device.serial} />
                 </div>
-                <button onClick={onDeleteDevice} type="button" class="focus:outline-none inline-flex text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                <button onClick={onDeleteDevice} type="button" className="focus:outline-none inline-flex text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
                   <TrashIcon className='w-5 h-5 mr-2'/>
                   Remove Device
                </button>
