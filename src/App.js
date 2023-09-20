@@ -21,7 +21,7 @@ const router = createBrowserRouter([
 function Root() {
   return (
       <Routes>
-        <Route path="/" element={<Lander />} />
+        <Route path="/" element={<LoginPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPage />} />
