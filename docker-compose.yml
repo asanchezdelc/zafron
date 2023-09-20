@@ -13,10 +13,11 @@ services:
     links:
       - redis
     environment:
-      - REDIS_HOST=redis
+      - REDIS_URL=redis://redis
       - NODE_ENV=production
       - DATABASE_URL=mongodb://mongodb:27017/zafron
       - JWT_SECRET=secret
+      - MQTT_ENABLED=true
     depends_on:
       - mongodb
       - redis
