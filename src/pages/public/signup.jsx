@@ -39,7 +39,11 @@ export default function RegisterPage() {
 
   return (
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
-        <Flex justifyContent='center'>
+        <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0'>
+          <a href="/" className="flex items-center mb-6 text-2xl font-semibold">
+            <img class="w-12 h-12 mr-2" src="https://zafron.dev/img/zafron.png" alt="logo" />
+            Zafron    
+            </a>
           <Card className="max-w-xs">
             <Title>Register</Title>
             <Divider />
@@ -80,7 +84,7 @@ export default function RegisterPage() {
               <Link className='text-blue-600 dark:text-blue-500 hover:underline' to={'/login'}>Login</Link>
             </div>
           </Card>
-        </Flex>
+        </div>
         
     </main>
   );

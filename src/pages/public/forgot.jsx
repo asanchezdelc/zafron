@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 export default function ForgotPage() {
   return (
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
-        <Flex justifyContent='center'>
+        <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0'>
+            <a href="/" className="flex items-center mb-6 text-2xl font-semibold">
+              <img class="w-12 h-12 mr-2" src="https://zafron.dev/img/zafron.png" alt="logo" />
+              Zafron    
+            </a>
           <Card className="max-w-xs">
             <Title>Forgot password</Title>
             
@@ -25,7 +29,7 @@ export default function ForgotPage() {
               </div>
             </form>
           </Card>
-        </Flex>
+        </div>
     </main>
   );
 }
