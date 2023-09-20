@@ -6,7 +6,6 @@ WORKDIR /src/app
 
 # Install app dependencies
 COPY package.json /src/app/
-COPY .env.example /src/app/.env
 
 RUN npm install
 
