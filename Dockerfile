@@ -17,7 +17,7 @@ COPY . /src/app
 RUN npm run build
 
 EXPOSE 3000
-EXPOSE 1883
+#EXPOSE 1883
 
 # defined in package.json
 CMD [ "node", "app.js" ]
