@@ -1,6 +1,7 @@
 import Navbar from "./navbar";
+import { useAuth } from '../services/AuthProvider';
 
 export default function Nav() {
-  const session = {}
-  return <Navbar user={session.user} /> 
+  const { currentUser } = useAuth();
+  return <Navbar user={currentUser} /> 
 }

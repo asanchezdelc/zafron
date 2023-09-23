@@ -12,7 +12,7 @@ import LoginPage from './pages/public/login';
 import RegisterPage from './pages/public/signup';
 import ForgotPage from './pages/public/forgot';
 import DeviceDetail from './pages/devices/detail';
-import Lander from './pages/public/lander';
+import { AuthProvider } from './services/AuthProvider';
 
 const router = createBrowserRouter([
   { path: "*", Component: Root },
@@ -34,7 +34,9 @@ function Root() {
 }
 
 function App() {
-  return <RouterProvider router={router} />;
+  return <AuthProvider>
+    <RouterProvider router={router} />;
+    </AuthProvider>
 }
 
 export default App;
