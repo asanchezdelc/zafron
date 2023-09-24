@@ -11,6 +11,7 @@ import Devices from './pages/devices';
 import LoginPage from './pages/public/login';
 import RegisterPage from './pages/public/signup';
 import ForgotPage from './pages/public/forgot';
+import ResetPasswordPage from './pages/public/reset';
 import DeviceDetail from './pages/devices/detail';
 import { AuthProvider } from './services/AuthProvider';
 
@@ -25,6 +26,7 @@ function Root() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<PrivateRoutes/>}>
           <Route path="/devices" element={<Devices />} />
           <Route path="/devices/:deviceId" element={<DeviceDetail />} />
@@ -35,7 +37,7 @@ function Root() {
 
 function App() {
   return <AuthProvider>
-    <RouterProvider router={router} />;
+      <RouterProvider router={router} />;
     </AuthProvider>
 }
 
