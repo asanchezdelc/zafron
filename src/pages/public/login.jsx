@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Card, Title, Button, Flex, Divider, TextInput } from '@tremor/react';
+import { Card, Title, Button, Divider, TextInput } from '@tremor/react';
 import { Link, useNavigate } from "react-router-dom";
-import AuthService from '../../services/auth';
 import Alert from '../../components/alert';
+import { useAuth } from '../../services/AuthProvider';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-  const authService = new AuthService();
-  const isAuthenticated = authService.isAuthenticated();
+  const { login, isAuthenticated } = useAuth();
+
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated()) {
       navigate('/devices');
     }
   }, [isAuthenticated, navigate]);
@@ -33,7 +33,7 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem('jwt', data.token); // Store the JWT for future authenticated requests
+        login(data.user, data.token); // Update the authenticated state
         navigate('/devices'); // Navigate the user to the dashboard or another protected route
       } else {
         setError(data.error || 'Failed to login'); // Display the error message returned from the API or a generic message

@@ -37,8 +37,8 @@ export default function Credentials({ clientId }) {
             Host
           </label>
           <Flex>
-          <pre className={fieldStyle}>mqtt.streamloom.io</pre>
-          <button onClick={() => copyToClipboard('mqtt.streamloom.io')} className="border rounded py-2 px-2"><ClipboardIcon className='h-5 w-5' /></button>
+          <pre className={fieldStyle}>mqtt.zafron.dev</pre>
+          <button onClick={() => copyToClipboard('mqtt.zafron.dev')} className="border rounded py-2 px-2"><ClipboardIcon className='h-5 w-5' /></button>
           </Flex>
         </div>
         <div className="mb-4">

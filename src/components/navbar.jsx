@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '../services/AuthProvider';
 
 const navigation = [
   { name: 'Devices', href: '/devices' },
@@ -13,10 +15,18 @@ function classNames(...classes) {
 
 
 export default function Navbar({ user }) {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const pathname = {};
 
   const signIn = () => {};
-  const signOut = () => {};
+  const signOut = () => {
+    logout();
+    navigate('/login');
+  };
+  const accountClick = () => {
+    navigate('/account');
+  };
 
   return (
     <Disclosure as="nav" className="bg-white shadow-sm">
@@ -66,7 +76,7 @@ export default function Navbar({ user }) {
                   <div>
                     <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
-                      <UserCircleIcon />
+                      <UserCircleIcon className='text-gray-400 w-10 h-10'/>
 
                     </Menu.Button>
                   </div>
@@ -81,6 +91,12 @@ export default function Navbar({ user }) {
                   >
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       {user ? (
+                      <>
+                        <Menu.Item>
+                          <button onClick={()=> accountClick() } className="flex w-full px-4 py-2 text-sm text-gray-700">
+                            Account
+                          </button>
+                        </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <button
@@ -94,6 +110,7 @@ export default function Navbar({ user }) {
                             </button>
                           )}
                         </Menu.Item>
+                        </>
                       ) : (
                         <Menu.Item>
                           {({ active }) => (
@@ -179,7 +196,7 @@ export default function Navbar({ user }) {
               ) : (
                 <div className="mt-3 space-y-1">
                   <button
-                    onClick={() => signIn('github')}
+                    onClick={() => signIn('login')}
                     className="flex w-full px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800"
                   >
                     Sign in
