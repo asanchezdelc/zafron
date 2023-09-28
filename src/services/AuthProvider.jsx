@@ -23,7 +23,9 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = () => {
       if (currentUser !== null || (token && jwt_decode(token).exp > Date.now() / 1000)) {
-        setCurrentUser(jwt_decode(token));
+        if (!currentUser) {
+          setCurrentUser(jwt_decode(token));
+        }
         return true;
       }
 
