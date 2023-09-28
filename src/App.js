@@ -14,6 +14,8 @@ import ForgotPage from './pages/public/forgot';
 import ResetPasswordPage from './pages/public/reset';
 import DeviceDetail from './pages/devices/detail';
 import { AuthProvider } from './services/AuthProvider';
+import { Crisp } from "crisp-sdk-web";
+import { useEffect } from 'react';
 
 const router = createBrowserRouter([
   { path: "*", Component: Root },
@@ -36,6 +38,14 @@ function Root() {
 }
 
 function App() {
+  const cc = process.env.REACT_APP_CHAT_KEY;
+  useEffect(() => {
+    if (cc && cc !== '') {
+      Crisp.configure(cc);
+    }
+  }, [cc]);
+  
+
   return <AuthProvider>
       <RouterProvider router={router} />;
     </AuthProvider>
