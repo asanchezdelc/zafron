@@ -4,7 +4,7 @@ import CloseIcon from '../../../components/icons/CloseIcon';
 import Alert from '../../../components/alert';
 import PlusIcon from '../../../components/icons/PlusIcon';
 
-export default function RuleCRUD({ capabilities, onCancel, onAction }) {
+export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formMode='create' }) {
   const [name, setName] = useState('');
   const [capability, setCapability] = useState('');
   const [condition, setCondition] = useState('');
@@ -14,17 +14,29 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
   const [disabled, setDisabled] = useState(true);
   const [actionType, setActionType] = useState('email');
   const [errors, setErrors] = useState({});
-  // if capabilities is undefined, return empty div
+
+  useEffect(() => {
+    // If in "edit" mode and a rule is provided, populate the form fields
+    if (formMode === 'edit' && rule) {
+      setName(rule.name || '');
+      setCapability(rule.capability || '');
+      setCondition(rule.condition || '');
+      setValue(rule.value || 0);
+      setWebhook(rule.webhook || '');
+      setEmail(rule.email || '');
+      setActionType(rule.actionType || 'email');
+    }
+  }, [formMode, rule]);
 
   const validateForm = () => {
     let errors = {};
 
-    if (!name.trim()) errors.name = "Name is required";
+    if (!name) errors.name = "Name is required";
     if (!capability) errors.capability = "Capability is required";
     if (!condition) errors.condition = "Condition is required";
     if (value === 0) errors.value = "Value must not be zero";
-    if (actionType === 'webhook' && !webhook.trim()) errors.webhook = "Webhook URL is required when alert type is webhook";
-    if (actionType === 'email' && !email.trim()) errors.email = "Email is required when alert type is email";
+    if (actionType === 'webhook' && !webhook) errors.webhook = "Webhook URL is required when alert type is webhook";
+    if (actionType === 'email' && !email) errors.email = "Email is required when alert type is email";
     else if (actionType === 'email' && !/\S+@\S+\.\S+/.test(email)) errors.email = "Invalid email format";
 
     setErrors(errors);
@@ -54,15 +66,13 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
     }
   }, [capabilities]);
 
-
-
   return (
     <div className="relative">
       <Flex className='border-b pb-2 mb-2'>
         <h3 className='text-lg font-semibold text-gray-700'>Add Rule</h3>
-        <button type="button" onClick={onCancel} class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
+        <button type="button" onClick={onCancel} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
           <CloseIcon />
-          <span class="sr-only">Close modal</span>
+          <span className="sr-only">Close modal</span>
         </button>
       </Flex>
       <div className="form-box">
@@ -74,13 +84,13 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
         </Alert> 
       )}
       <form action="#">
-        <div class="grid gap-4 mb-4">
+        <div className="grid gap-4 mb-4">
           <div>
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Name</label>
+            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
             <TextInput value={name} placeholder="Temperature Alert" onChange={(e) => setName(e.target.value)}/>
           </div>
           <div>
-            <label for="category" class="block mb-2 text-sm font-medium text-gray-900">Capability</label>
+            <label for="category" className="block mb-2 text-sm font-medium text-gray-900">Capability</label>
             <Select value={capability} onValueChange={setCapability} defaultValue='1'>
               { capabilities && capabilities.map((capability, index) => (
               <SelectItem key={index} value={capability.channel}>
@@ -90,7 +100,7 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
             { capabilities === undefined || capabilities.length === 0 ? <small></small> : <div></div>}
           </div>
         <div>
-          <label for="category" class="block mb-2 text-sm font-medium text-gray-900">Condition</label>
+          <label for="category" className="block mb-2 text-sm font-medium text-gray-900">Condition</label>
           <Select value={condition} onValueChange={setCondition} defaultValue='1'>
             <SelectItem value="gt">
               Greater than
@@ -104,11 +114,11 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
           </Select>
         </div>
         <div>
-            <label for="name" class="block mb-2 text-sm font-medium text-gray-900">Value</label>
+            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Value</label>
             <TextInput type="number" value={value} onChange={(e) => setValue(e.target.value)}/>
         </div>
         <div>
-          <label for="action" class="block mb-2 text-sm font-medium text-gray-900">Action</label>
+          <label for="action" className="block mb-2 text-sm font-medium text-gray-900">Action</label>
           <Select value={actionType} onValueChange={setActionType} defaultValue='email'>
             <SelectItem value="email">
               Send Email
@@ -122,11 +132,11 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
         <div className='mb-4'>
           {actionType === 'email' ? 
           <div className='mb-2'>
-            <label for="email" class="block mb-2 text-sm font-medium text-gray-900">E-mail Address</label>
+            <label for="email" className="block mb-2 text-sm font-medium text-gray-900">E-mail Address</label>
             <TextInput value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder='foobar@example.com' />
           </div>:
           <div className='mb-2'>
-            <label for="webhook" class="block mb-2 text-sm font-medium text-gray-900">Url</label>
+            <label for="webhook" className="block mb-2 text-sm font-medium text-gray-900">Url</label>
             <TextInput value={webhook} onChange={(e) => setWebhook(e.target.value)} type="url" placeholder='http://example.com'/>
           </div>
           }

@@ -9,6 +9,7 @@ export default function RulesPage({device}) {
   const [isOpen, setIsOpen] = useState(false);
   const [rules, setRules] = useState([]);
   const closeModal = ()=> setIsOpen(false);
+  const [rule, setRule] = useState({});
 
   const onCreate = async (rule) => {
     // call api to create rule
@@ -51,11 +52,15 @@ export default function RulesPage({device}) {
       await rulesAPI.remove(ruleId);
       // remove from rules
       const newRules = rules.filter(rule => rule._id !== ruleId);
-      console.log(newRules.length)
       setRules(newRules);
     } catch (err) {
       console.log(err);
     }
+  }
+
+  const onEdit = async (toEditRule) => {
+    setRule(toEditRule);
+    setIsOpen(true);
   }
 
   return (
@@ -71,7 +76,7 @@ export default function RulesPage({device}) {
             <Button onClick={handleAddRule}>Add Rule</Button>
           </div>
         </Flex>
-        <RulesTable rules={ rules } onDelete={onDelete} />
+        <RulesTable rules={ rules } onDelete={onDelete} onEdit={onEdit} />
         <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-50" onClose={closeModal}>
             <Transition.Child
@@ -100,7 +105,7 @@ export default function RulesPage({device}) {
                     className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
                                       p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
                   >
-                    <RuleCRUD capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} />
+                    <RuleCRUD capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} formMode={rule ? 'edit':'create'} />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
