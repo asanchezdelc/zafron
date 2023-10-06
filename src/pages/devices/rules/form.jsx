@@ -4,7 +4,7 @@ import CloseIcon from '../../../components/icons/CloseIcon';
 import Alert from '../../../components/alert';
 import PlusIcon from '../../../components/icons/PlusIcon';
 
-export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formMode='create' }) {
+export default function RuleForm({ capabilities, onCancel, onAction, rule, formMode='create' }) {
   const [name, setName] = useState('');
   const [capability, setCapability] = useState('');
   const [condition, setCondition] = useState('');
@@ -14,17 +14,21 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
   const [disabled, setDisabled] = useState(true);
   const [actionType, setActionType] = useState('email');
   const [errors, setErrors] = useState({});
+  const [title, setTitle] = useState('Add Rule');
+  const [action, setAction] = useState('Add Rule');
 
   useEffect(() => {
     // If in "edit" mode and a rule is provided, populate the form fields
     if (formMode === 'edit' && rule) {
+      setAction('Update');
+      setTitle('Edit Rule');
       setName(rule.name || '');
-      setCapability(rule.capability || '');
-      setCondition(rule.condition || '');
-      setValue(rule.value || 0);
-      setWebhook(rule.webhook || '');
-      setEmail(rule.email || '');
-      setActionType(rule.actionType || 'email');
+      setCapability(rule.condition.channel || '');
+      setCondition(rule.condition.operator || '');
+      setValue(rule.condition.value || 0);
+      setActionType(rule.action.type || 'email');
+      if (rule.action.type === 'webhook') setWebhook(rule.action.value || '');
+      if (rule.action.type === 'email')       setEmail(rule.action.value || '');
     }
   }, [formMode, rule]);
 
@@ -56,7 +60,8 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
       webhook,
       email
     }
-    onAction(rule);
+    
+    onAction(rule, formMode);
   }
 
   useEffect(() => {
@@ -69,7 +74,7 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
   return (
     <div className="relative">
       <Flex className='border-b pb-2 mb-2'>
-        <h3 className='text-lg font-semibold text-gray-700'>Add Rule</h3>
+        <h3 className='text-lg font-semibold text-gray-700'>{title}</h3>
         <button type="button" onClick={onCancel} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
           <CloseIcon />
           <span className="sr-only">Close modal</span>
@@ -83,24 +88,24 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
           ))}
         </Alert> 
       )}
-      <form action="#">
+      <form>
         <div className="grid gap-4 mb-4">
           <div>
-            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
-            <TextInput value={name} placeholder="Temperature Alert" onChange={(e) => setName(e.target.value)}/>
+            <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
+            <TextInput id="name" value={name} placeholder="Temperature Alert" onChange={(e) => setName(e.target.value)}/>
           </div>
           <div>
-            <label for="category" className="block mb-2 text-sm font-medium text-gray-900">Capability</label>
-            <Select value={capability} onValueChange={setCapability} defaultValue='1'>
-              { capabilities && capabilities.map((capability, index) => (
-              <SelectItem key={index} value={capability.channel}>
-                {`${capability.name} - Channel ${capability.channel}`}
+            <label className="block mb-2 text-sm font-medium text-gray-900">Capability</label>
+            <Select value={capability} onValueChange={setCapability}>
+              { capabilities && capabilities.map((cap, index) => (
+              <SelectItem key={index} value={`${cap.channel}`}>
+                {`${cap.name} - Channel ${cap.channel}`}
               </SelectItem>) ) }
             </Select>
-            { capabilities === undefined || capabilities.length === 0 ? <small></small> : <div></div>}
+            { capabilities === undefined || capabilities.length === 0 ? <small>Cannot create rule without a capability.</small> : <div></div>}
           </div>
         <div>
-          <label for="category" className="block mb-2 text-sm font-medium text-gray-900">Condition</label>
+          <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">Condition</label>
           <Select value={condition} onValueChange={setCondition} defaultValue='1'>
             <SelectItem value="gt">
               Greater than
@@ -114,12 +119,12 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
           </Select>
         </div>
         <div>
-            <label for="name" className="block mb-2 text-sm font-medium text-gray-900">Value</label>
-            <TextInput type="number" value={value} onChange={(e) => setValue(e.target.value)}/>
+            <label htmlFor="value" className="block mb-2 text-sm font-medium text-gray-900">Value</label>
+            <TextInput type="number" value={value} onChange={(e) => setValue(e.target.value)} id="value"/>
         </div>
         <div>
-          <label for="action" className="block mb-2 text-sm font-medium text-gray-900">Action</label>
-          <Select value={actionType} onValueChange={setActionType} defaultValue='email'>
+          <label htmlFor="action" className="block mb-2 text-sm font-medium text-gray-900">Action</label>
+          <Select value={actionType} onValueChange={setActionType} defaultValue='email' id="action">
             <SelectItem value="email">
               Send Email
             </SelectItem>
@@ -132,11 +137,11 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
         <div className='mb-4'>
           {actionType === 'email' ? 
           <div className='mb-2'>
-            <label for="email" className="block mb-2 text-sm font-medium text-gray-900">E-mail Address</label>
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">E-mail Address</label>
             <TextInput value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder='foobar@example.com' />
           </div>:
           <div className='mb-2'>
-            <label for="webhook" className="block mb-2 text-sm font-medium text-gray-900">Url</label>
+            <label htmlFor="webhook" className="block mb-2 text-sm font-medium text-gray-900">Url</label>
             <TextInput value={webhook} onChange={(e) => setWebhook(e.target.value)} type="url" placeholder='http://example.com'/>
           </div>
           }
@@ -154,8 +159,8 @@ export default function RuleCRUD({ capabilities, onCancel, onAction, rule, formM
           className="mt-2 flex items-center justify-center text-white bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
           onClick={onSubmit}
         >
-          <PlusIcon />
-          Add Rule
+          {/* <PlusIcon /> */}
+          { action }
         </button>
         </Flex>
       </div>

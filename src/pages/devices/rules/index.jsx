@@ -2,7 +2,7 @@ import React, { useEffect, useState, Fragment } from 'react';
 import { Card, Title, Flex, Button, TextInput } from '@tremor/react';
 import RulesTable from './ruletable';
 import { Dialog, Transition } from "@headlessui/react";
-import RuleCRUD from './create';
+import RuleForm from './form';
 import * as rulesAPI from '../../../services/rule';
 
 export default function RulesPage({device}) {
@@ -10,14 +10,27 @@ export default function RulesPage({device}) {
   const [rules, setRules] = useState([]);
   const closeModal = ()=> setIsOpen(false);
   const [rule, setRule] = useState({});
+  const [formMode, setFormMode] = useState('create');
 
-  const onCreate = async (rule) => {
+  const onCreate = async (ruleData, mode) => {
     // call api to create rule
     try {
-      const newRule = await rulesAPI.create({ ...rule, deviceId: device._id, serial: device.serial });
+      let newRule;
+      if (mode === 'edit') {
+        newRule = await rulesAPI.update(rule._id, { ...ruleData, deviceId: device._id, serial: device.serial });
+        const newRules = rules.map(r => {
+          if (r._id === ruleData._id) {
+            return newRule;
+          }
+          return r;
+        });
+        setRules(newRules);
+      } else {
+        newRule = await rulesAPI.create({ ...ruleData, deviceId: device._id, serial: device.serial });
+        setRules([...rules, newRule]);
+      }
+
       closeModal();
-      console.log(newRule)
-      setRules([...rules, newRule]);
     } catch (err) {
       console.log(err);
     }
@@ -44,6 +57,8 @@ export default function RulesPage({device}) {
   }, [device]);
 
   const handleAddRule = () => {
+    setRule({});
+    setFormMode('create');
     setIsOpen(true);
   }
 
@@ -60,6 +75,8 @@ export default function RulesPage({device}) {
 
   const onEdit = async (toEditRule) => {
     setRule(toEditRule);
+    setFormMode('edit');
+    console.log(toEditRule);
     setIsOpen(true);
   }
 
@@ -105,7 +122,7 @@ export default function RulesPage({device}) {
                     className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
                                       p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
                   >
-                    <RuleCRUD capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} formMode={rule ? 'edit':'create'} />
+                    <RuleForm capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} formMode={formMode} rule={rule} />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>
