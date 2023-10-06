@@ -12,7 +12,7 @@ import * as devicesAPI from '../../services/device';
 import LogPanel from './log/logpanel';
 import MetricCard from './metric';
 import Credentials from './credentials';
-import { WifiIcon, CpuChipIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { WifiIcon, CpuChipIcon, TrashIcon, BellAlertIcon, Cog6ToothIcon, CircleStackIcon } from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
 import { useNavigate } from "react-router-dom";
 import { toFriendlyTime } from '../../services/utils';
@@ -171,10 +171,10 @@ export default function DeviceDetail() {
         </Flex>
         <TabGroup className="mt-6">
         <TabList>
-          <Tab>Overview</Tab>
-          <Tab>Logs</Tab>
-          <Tab>Rules</Tab>
-          <Tab>Settings</Tab>
+          <Tab icon={CpuChipIcon}>Overview</Tab>
+          <Tab icon={CircleStackIcon}>Logs</Tab>
+          <Tab icon={BellAlertIcon}>Rules</Tab>
+          <Tab icon={Cog6ToothIcon}>Settings</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
