@@ -16,6 +16,7 @@ import { WifiIcon, CpuChipIcon, TrashIcon } from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
 import { useNavigate } from "react-router-dom";
 import { toFriendlyTime } from '../../services/utils';
+import RulesPage from './rules/index';
 
 function Onboarding({ device }) {
   return (
@@ -93,8 +94,8 @@ export default function DeviceDetail() {
       const currentCapabilities = capabilitiesRef.current;
       const newCapabilities = [];
 
-      if (data.measurements) {
-        setUplink(new Date());
+      if (data.measurements && data.measurements.length > 0) {
+        setUplink(data.measurements[0].timestamp);
       }
 
       data.measurements.forEach((measurement) => {
@@ -172,6 +173,7 @@ export default function DeviceDetail() {
         <TabList>
           <Tab>Overview</Tab>
           <Tab>Logs</Tab>
+          <Tab>Rules</Tab>
           <Tab>Settings</Tab>
         </TabList>
         <TabPanels>
@@ -185,6 +187,9 @@ export default function DeviceDetail() {
           </TabPanel>
           <TabPanel>
             <LogPanel deviceId={device._id} />
+          </TabPanel>
+          <TabPanel>
+            <RulesPage device={device} />
           </TabPanel>
           <TabPanel>  
               <div className='mt-8'>

@@ -1,0 +1,18 @@
+{% layout "base" %}
+{% block content %}
+
+<p style="text-align: center; padding: 20px 0;">
+    Alert Notification
+</p>
+
+<p>
+    Your configured alert for device {{ serial }} has met the configured threshold.
+</p>
+<p>
+    Current value: {{ triggeredValue }} 
+</p>
+<p>
+  Triggered at: {{ triggeredAt }}
+</p>
+
+{% endblock %}
