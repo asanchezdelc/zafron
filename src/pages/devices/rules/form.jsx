@@ -99,7 +99,7 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
             <Select value={capability} onValueChange={setCapability}>
               { capabilities && capabilities.map((cap, index) => (
               <SelectItem key={index} value={`${cap.channel}`}>
-                {`${cap.name} - Channel ${cap.channel}`}
+                {`${cap.type} - Channel ${cap.channel}`}
               </SelectItem>) ) }
             </Select>
             { capabilities === undefined || capabilities.length === 0 ? <small>Cannot create rule without a capability.</small> : <div></div>}
