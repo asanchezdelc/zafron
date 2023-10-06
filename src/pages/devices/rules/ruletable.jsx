@@ -11,7 +11,7 @@ import {
   Badge
 } from '@tremor/react';
 import { Menu, Transition } from '@headlessui/react'
-import { PencilIcon } from '@heroicons/react/24/outline'
+import { toFriendlyTime } from '../../../services/utils';
 
 function ActionsDropdown({ onDelete, onEdit}) {
   return (
@@ -99,6 +99,7 @@ export default function RulesTable({ rules, onDelete }) {
           <TableHeaderCell>Name</TableHeaderCell>
           <TableHeaderCell>Threshold</TableHeaderCell>
           <TableHeaderCell>Action Type</TableHeaderCell>
+          <TableHeaderCell>Last Triggered</TableHeaderCell>
           <TableHeaderCell className='px-4 py-3 flex items-center justify-end'>Settings</TableHeaderCell>
         </TableRow>
       </TableHead>
@@ -113,6 +114,9 @@ export default function RulesTable({ rules, onDelete }) {
             </TableCell>
             <TableCell>
               { rule.action.type }
+            </TableCell>     
+            <TableCell>
+              { toFriendlyTime(rule.triggeredAt) }
             </TableCell>       
             <TableCell className='flex items-center justify-end'>
               <ActionsDropdown onDelete={() => onDelete(rule._id)} />

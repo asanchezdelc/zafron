@@ -20,8 +20,8 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
     let errors = {};
 
     if (!name.trim()) errors.name = "Name is required";
-    if (!capability.trim()) errors.capability = "Capability is required";
-    if (!condition.trim()) errors.condition = "Condition is required";
+    if (!capability) errors.capability = "Capability is required";
+    if (!condition) errors.condition = "Condition is required";
     if (value === 0) errors.value = "Value must not be zero";
     if (actionType === 'webhook' && !webhook.trim()) errors.webhook = "Webhook URL is required when alert type is webhook";
     if (actionType === 'email' && !email.trim()) errors.email = "Email is required when alert type is email";
@@ -82,7 +82,8 @@ export default function RuleCRUD({ capabilities, onCancel, onAction }) {
           <div>
             <label for="category" class="block mb-2 text-sm font-medium text-gray-900">Capability</label>
             <Select value={capability} onValueChange={setCapability} defaultValue='1'>
-              { capabilities && capabilities.map((capability, index) => (<SelectItem key={index} value="1">
+              { capabilities && capabilities.map((capability, index) => (
+              <SelectItem key={index} value={capability.channel}>
                 {`${capability.name} - Channel ${capability.channel}`}
               </SelectItem>) ) }
             </Select>
