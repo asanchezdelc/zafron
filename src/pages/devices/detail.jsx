@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Fragment } from 'react';
 import { useParams } from 'react-router-dom';
 import { Title, TabGroup, 
   Flex, Text, Tab, 
@@ -17,6 +17,8 @@ import Spinner from '../../components/spinner';
 import { useNavigate } from "react-router-dom";
 import { toFriendlyTime } from '../../services/utils';
 import RulesPage from './rules/index';
+import CapabilityForm from './capability/form';
+import { Dialog, Transition } from '@headlessui/react';
 
 function Onboarding({ device }) {
   return (
@@ -46,10 +48,9 @@ export default function DeviceDetail() {
   const [uplink, setUplink] = useState(null);
   const navigate = useNavigate();
   const [disabled, setDisabled] = useState(false);
-
-  useEffect(() => {
-    capabilitiesRef.current = capabilities;
-  }, [capabilities]);
+  const [isOpen, setIsOpen] = useState(false);
+  const closeModal = ()=> setIsOpen(false);
+  const [capability, setCapability] = useState({});
 
   const setStatus = (ts, thresholdMinutes = 60) => {
     if (!ts) {
@@ -127,11 +128,25 @@ export default function DeviceDetail() {
     }
   };
 
-  useEffect(() => {
-    getDevice();
-    const interval = setInterval(getLatest, 5000); 
-    return () => clearInterval(interval);
-  }, [params.deviceId]);
+  const onUpdateCapability = async (updatedCapability) => {
+    // lets replace the capability from the list and update the state
+    const index = capabilities.findIndex((item) => item.channel === updatedCapability.channel);
+    capabilities[index] = updatedCapability;
+
+    // update existing capabilities with updated capability
+    setCapabilities([...capabilities]);
+
+    console.log(capabilities)
+
+    try {
+      await devicesAPI.patchDevice(device._id, { capabilities: [updatedCapability] });
+    } catch (err) {
+      console.error("Error updating capability:", err);
+    }
+
+    // close modal
+    closeModal();
+  }
 
   const onAddCapability = async (capability) => {
     try {
@@ -149,6 +164,37 @@ export default function DeviceDetail() {
       console.error("Error adding capability:", err);
     }
   }
+
+  const onDeleteCapability = async (toDeleteCapability) => {
+    console.log(toDeleteCapability);
+    console.log('ondelete')
+    try {
+      const resp = await devicesAPI.removeCapability(device._id, toDeleteCapability);
+      console.log(resp);
+      // lets replace the capability from the list and update the state
+      const index = capabilities.findIndex((item) => item.channel === toDeleteCapability.channel);
+      capabilities.splice(index, 1);
+      setCapabilities([...capabilities]);
+      closeModal();
+    } catch (err) {
+      console.error("Error deleting capability:", err);
+    }
+  }
+
+  const onEditCapability = async (capability) => {
+    setCapability(capability);
+    setIsOpen(true);
+  }
+
+  useEffect(() => {
+    getDevice();
+    const interval = setInterval(getLatest, 5000); 
+    return () => clearInterval(interval);
+  }, [params.deviceId]);
+
+  useEffect(() => {
+    capabilitiesRef.current = capabilities;
+  }, [capabilities]);
 
   return (
     <div>
@@ -182,8 +228,56 @@ export default function DeviceDetail() {
           <TabPanel>
             {isLoading ? <Spinner /> : (
             <>{(!capabilities || capabilities.length === 0) && <Onboarding device={device} />}
+            <Transition appear show={isOpen} as={Fragment}>
+          <Dialog as="div" className="relative z-50" onClose={closeModal}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-gray-900 bg-opacity-25" />
+            </Transition.Child>
+            <div className="fixed inset-0 overflow-y-auto">
+              <div className="flex min-h-full items-center justify-center p-4 text-center">
+                <Transition.Child
+                  as={Fragment}
+                  enter="ease-out duration-300"
+                  enterFrom="opacity-0 scale-95"
+                  enterTo="opacity-100 scale-100"
+                  leave="ease-in duration-200"
+                  leaveFrom="opacity-100 scale-100"
+                  leaveTo="opacity-0 scale-95"
+                >
+                  <Dialog.Panel
+                    className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
+                                      p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
+                  >
+                    <CapabilityForm 
+                      onCancel={closeModal} 
+                      onAction={onUpdateCapability} 
+                      onRemove={onDeleteCapability}
+                      capability={capability} 
+                    />
+                  </Dialog.Panel>
+                </Transition.Child>
+              </div>
+            </div>
+          </Dialog>
+        </Transition>
             <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
-              { capabilities && capabilities.map((reading, index) => ( <MetricCard key={index} deviceId={device._id} capability={reading} onAddCapability={onAddCapability} /> ))}
+              { capabilities && capabilities.map((reading, index) => ( 
+              <MetricCard 
+                key={index} 
+                deviceId={device._id} 
+                capability={reading} 
+                onAddCapability={onAddCapability}
+                onEditCapability={onEditCapability} 
+              /> 
+              ))}
             </Grid>
             </>)}
           </TabPanel>
@@ -197,7 +291,11 @@ export default function DeviceDetail() {
               <div className='mt-8'>
                   <Credentials clientId={device.serial} />
                 </div>
-                <button onClick={() => onDeleteDevice(device._id)} disabled={disabled} type="button" className="focus:outline-none inline-flex text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+                <button 
+                  onClick={() => onDeleteDevice(device._id)} 
+                  disabled={disabled} 
+                  type="button" 
+                  className="focus:outline-none inline-flex text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
                   <TrashIcon className='w-5 h-5 mr-2'/>
                   Remove Device
                </button>

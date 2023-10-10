@@ -1,33 +1,6 @@
+const { request } = require('./request');
+
 const baseURL = "/api/devices";
-
-const getToken = () => {
-    return localStorage.getItem('jwt'); 
-};
-
-const request = async (url, options = {}) => {
-    // Default headers
-    const headers = {
-        'Authorization': `Bearer ${getToken()}`
-    };
-
-    if (options.json) {
-        headers['Content-Type'] = 'application/json';
-        options.body = JSON.stringify(options.json);
-        delete options.json;
-    }
-
-    const response = await fetch(url, {
-        ...options,
-        headers
-    });
-
-    if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Request failed");
-    }
-
-    return response.json();
-};
 
 export const fetchDevices = () => {
     return request(baseURL);
@@ -46,12 +19,19 @@ export const removeDevice = (deviceId) => {
     });
 };
 
+export const removeCapability = (deviceId, capability) => {
+  return request(`${baseURL}/${deviceId}/capabilities?action=remove`, {
+      method: 'PATCH',
+      json: capability
+  });
+};
+
 export const patchDevice = (deviceId, payload) => {
   return request(`${baseURL}/${deviceId}`, {
       method: 'PATCH',
       json: payload
   });
-}; 
+};
 
 export const fetchOne = (id) => {
   return request(`${baseURL}/${id}`);
@@ -72,3 +52,4 @@ export const fetchLatest = (id) => {
 export const fetchMetric = (id, channel) => {
   return request(`${baseURL}/${id}/measurements/${channel}`);
 }
+
