@@ -13,8 +13,7 @@ import Nav from '../../components/nav';
 import * as devicesAPI from '../../services/device';
 import LogPanel from './log/logpanel';
 import MetricCard from './metric';
-import Credentials from './credentials';
-import { WifiIcon, CpuChipIcon, TrashIcon, BellAlertIcon, Cog6ToothIcon, CircleStackIcon } from '@heroicons/react/24/outline';
+import { WifiIcon, CpuChipIcon,  BellAlertIcon, Cog6ToothIcon, CircleStackIcon } from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
 import { useNavigate } from "react-router-dom";
 import { toFriendlyTime } from '../../services/utils';
@@ -23,24 +22,6 @@ import CapabilityForm from './capability/form';
 import { Dialog, Transition } from '@headlessui/react';
 import SettingsForm from './settings/form';
 import Hero from './onboarding/hero';
-
-function Onboarding({ device }) {
-  return (
-    <div className='border-1 bg-gray-100'>
-      <div className='flex justify-center items-center '>
-          <div className="p-6 m-4 text-center">
-            <h2 className="text-xl font-bold mb-4 text-gray-400">No Capabilities Found</h2>
-            <p className="mb-4 text-gray-600">Start by connecting your device to our application to populate its capabilities.</p>
-          </div>          
-      </div>
-      <div className='flex justify-center items-center'>
-        <div className='w-1/2'>
-          <Credentials clientId={device.serial} />
-        </div>
-      </div>    
-    </div>
-  )
-}
 
 export default function DeviceDetail() {
   const params = useParams();
