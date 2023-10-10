@@ -12,12 +12,14 @@ import { useNavigate } from "react-router-dom";
 import Credentials from '../credentials';
 import DeleteConfirm from '../../../components/DeleteConfirm';
 import * as devicesAPI from '../../../services/device';
+import Alert from '../../../components/alert';
 
 export default function SettingsForm({ device, onUpdate }) {
   const [name, setName] = useState(device.name);
   const [disabled, setDisabled] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const navigate = useNavigate();
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setName(device.name);
@@ -33,17 +35,35 @@ export default function SettingsForm({ device, onUpdate }) {
     }
   }
 
-  const onSave = async () => {
+  const validateForm = () => {
+    let errors = {};
+
+    if (!name) errors.name = "Name is required";
+    setErrors(errors);
+    setDisabled(Object.keys(errors).length > 0);
+    setTimeout(() => setErrors({}), 5000);
+    console.log(errors)
+    return Object.keys(errors).length > 0;
+  }
+
+  const onSave = async (e) => {
+    e.preventDefault();
     try {
-      setDisabled(true);
+      if (validateForm()) return;
+      
       await devicesAPI.patchDevice(device._id, { name });
       device.name = name;
       onUpdate(device);
-      setDisabled(false);
     } catch (err) {
       console.error("Error updating device:", err);
       setDisabled(false);
     }
+  }
+
+  const onSetName = (e) => {
+    setName(e.target.value);
+    setErrors({});
+    setDisabled(false);
   }
 
   return (
@@ -56,15 +76,22 @@ export default function SettingsForm({ device, onUpdate }) {
           message="Are you sure you want to delete this device?" 
           />
         <Card>
+            {Object.keys(errors).length > 0 && (
+            <Alert title="Error" message="Please correct the errors below:">
+              {Object.values(errors).map((error, index) => (
+                <div key={index}>{error}</div>
+              ))}
+            </Alert> 
+          )}
           <form>
             <div className="grid gap-4 mb-4">
               <div>
                 <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">Name</label>
-                <TextInput id="name" value={name} placeholder="Temperature Alert" onChange={(e) => setName(e.target.value)}/>
+                <TextInput id="name" value={name} placeholder="Humidor" onChange={onSetName}/>
               </div>
             </div>
             <Flex justifyContent={'end'}>
-              <Button onClick={() => onSave({ name })} disabled={disabled}>Save</Button>
+              <Button onClick={onSave} disabled={disabled}>Save</Button>
             </Flex>
           </form>
         </Card>
