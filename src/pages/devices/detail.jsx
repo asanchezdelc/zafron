@@ -22,6 +22,7 @@ import RulesPage from './rules/index';
 import CapabilityForm from './capability/form';
 import { Dialog, Transition } from '@headlessui/react';
 import SettingsForm from './settings/form';
+import Hero from './onboarding/hero';
 
 function Onboarding({ device }) {
   return (
@@ -224,7 +225,7 @@ export default function DeviceDetail() {
         <TabPanels>
           <TabPanel>
             {isLoading ? <Spinner /> : (
-            <>{(!capabilities || capabilities.length === 0) && <Onboarding device={device} />}
+            <>{(!capabilities || capabilities.length === 0) && <Hero device={device} />}
             <Transition appear show={isOpen} as={Fragment}>
           <Dialog as="div" className="relative z-50" onClose={closeModal}>
             <Transition.Child
