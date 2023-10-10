@@ -19,10 +19,10 @@ export const removeDevice = (deviceId) => {
     });
 };
 
-export const removeCapability = (deviceId, capability) => {
+export const patchCapability = (deviceId, capability) => {
   return request(`${baseURL}/${deviceId}/capabilities?action=remove`, {
       method: 'PATCH',
-      json: capability
+      json: { capability: capability }
   });
 };
 

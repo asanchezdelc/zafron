@@ -59,7 +59,7 @@ export default function CapabilityForm({ onCancel, onAction, onRemove, capabilit
               <ListItem key={item}>
                 <Text>{item}</Text>
                 <Text>
-                  <Bold>{capability[item]}</Bold>{" "}
+                  {capability[item]}
                 </Text>
               </ListItem>
             ))}

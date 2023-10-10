@@ -39,7 +39,6 @@ export default function RulesPage({device}) {
   const getRules = async () => {
     if (device === undefined && !device._id) return;
     try {
-      console.log(device._id);
       const rulesResp = await rulesAPI.list(device._id)
       setRules(rulesResp.rows)
     } catch (err) {
@@ -76,7 +75,6 @@ export default function RulesPage({device}) {
   const onEdit = async (toEditRule) => {
     setRule(toEditRule);
     setFormMode('edit');
-    console.log(toEditRule);
     setIsOpen(true);
   }
 

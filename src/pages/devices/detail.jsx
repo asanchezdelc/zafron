@@ -136,8 +136,6 @@ export default function DeviceDetail() {
     // update existing capabilities with updated capability
     setCapabilities([...capabilities]);
 
-    console.log(capabilities)
-
     try {
       await devicesAPI.patchDevice(device._id, { capabilities: [updatedCapability] });
     } catch (err) {
@@ -166,11 +164,8 @@ export default function DeviceDetail() {
   }
 
   const onDeleteCapability = async (toDeleteCapability) => {
-    console.log(toDeleteCapability);
-    console.log('ondelete')
     try {
-      const resp = await devicesAPI.removeCapability(device._id, toDeleteCapability);
-      console.log(resp);
+      const resp = await devicesAPI.patchCapability(device._id, toDeleteCapability);
       // lets replace the capability from the list and update the state
       const index = capabilities.findIndex((item) => item.channel === toDeleteCapability.channel);
       capabilities.splice(index, 1);
