@@ -1,4 +1,4 @@
-import {Flex, Title} from '@tremor/react';
+import {Flex, Title, Card} from '@tremor/react';
 import { ClipboardIcon } from '@heroicons/react/24/outline'
 import * as userAPI from '../../services/user';
 import { useEffect, useState } from 'react';
@@ -28,9 +28,7 @@ export default function Credentials({ clientId }) {
 
   return (
     <div>
-      
-      <div className="bg-white shadow-s rounded px-8 pt-6 pb-8 mb-4">
-        
+      <Card>    
         <Title className='mb-8'>MQTT Credentials</Title>
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-1">
@@ -88,7 +86,7 @@ export default function Credentials({ clientId }) {
               </button>
           </Flex>
         </div>
-    </div>
+    </Card>
   </div>
   );
 }
