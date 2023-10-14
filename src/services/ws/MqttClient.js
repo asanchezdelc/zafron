@@ -23,7 +23,11 @@ function MqttClient({ children }) {
         }
         
         // Create a new MQTT client instance
-        const mqttClient = mqtt.connect(`ws://${MQTT_SERVER}/wslive`, opts);
+        let wsUrl = `ws://${MQTT_SERVER}/wslive`
+        if (process.env.REACT_APP_MQTT_SECURE === 'true') {
+          wsUrl = `wss://${MQTT_SERVER}/wslive`
+        }
+        const mqttClient = mqtt.connect(wsUrl, opts);
 
         mqttClient.on('connect', () => {
             setIsConnected(true);
