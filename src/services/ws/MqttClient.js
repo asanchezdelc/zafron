@@ -3,15 +3,12 @@ import MqttContext from './MqttContext';
 import * as mqtt from 'mqtt/dist/mqtt.min';
 import { useAuth } from '../../services/AuthProvider';
 
-const API_URL = process.env.REACT_APP_API_URL;
+const MQTT_SERVER = process.env.REACT_APP_MQTT_SERVER;
 
 function MqttClient({ children }) {
     const [client, setClient] = useState(null);
     const [isConnected, setIsConnected] = useState(false);
     const { isAuthenticated, currentUser } = useAuth();
-    const [options, setOptions] = useState();
-
-
 
     useEffect(() => {
         // user is not authenticated, do not connect to mqtt
@@ -26,7 +23,7 @@ function MqttClient({ children }) {
         }
         
         // Create a new MQTT client instance
-        const mqttClient = mqtt.connect(`ws://${API_URL}/wslive`, opts);
+        const mqttClient = mqtt.connect(`ws://${MQTT_SERVER}/wslive`, opts);
 
         mqttClient.on('connect', () => {
             setIsConnected(true);
