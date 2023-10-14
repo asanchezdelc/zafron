@@ -3,9 +3,10 @@ import { PencilSquareIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import * as deviceAPI from "../../services/device";
 import { useState, useEffect } from "react";
 import { toFriendlyTime } from "../../services/utils";
-
+import Toggle from "../../components/Toggle";
 export default function MetricCard({ deviceId, capability, onAddCapability, onEditCapability }) {
   const [data, setData] = useState([]);
+  const [isActuator, setIsActuator] = useState(false);
 
   function transformData(data) {
     return data.map(item => ({
@@ -21,11 +22,15 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
       setData(chartData);
     };
 
+    if (capability.type === 'digital_actuator' || capability.type === 'analog_actuator') {
+      setIsActuator(true);
+    }
+
     if (!capability.new || !capability._id) {
       fetchData();
     }
 
-  }, [capability._id, capability.channel, capability.new, deviceId]);
+  }, [capability._id, capability.channel, capability.new, capability.type, deviceId]);
 
   return (
     <Card decoration="top" decorationColor={capability.new ? 'green':'indigo'}>
@@ -47,7 +52,7 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
         <Metric>{capability.value}</Metric>
         <Text>{capability.unit}</Text>        
       </Flex>
-      { !capability.new && (
+      { !capability.new && !isActuator && (
        <AreaChart
         className="mt-6 h-28"
         data={data}
@@ -61,6 +66,9 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
         showYAxis={false}
         showLegend={false}
       /> )}
+      { isActuator && <Flex justifyContent="center" alignItems="center">
+          <Toggle />
+        </Flex>}
     </Card>
   );
 }
