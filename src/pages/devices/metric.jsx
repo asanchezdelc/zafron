@@ -21,12 +21,11 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
       setData(chartData);
     };
 
-    if (!capability.new) {
+    if (!capability.new || !capability._id) {
       fetchData();
     }
 
-    fetchData();
-  }, [deviceId, capability.channel, capability.new]);
+  }, [capability._id, capability.channel, capability.new, deviceId]);
 
   return (
     <Card decoration="top" decorationColor={capability.new ? 'green':'indigo'}>
