@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import jwt_decode from "jwt-decode";
+import * as userAPI from './user';
 
 const AuthContext = createContext();
 
@@ -23,9 +24,6 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = () => {
       if (currentUser !== null || (token && jwt_decode(token).exp > Date.now() / 1000)) {
-        if (!currentUser) {
-          setCurrentUser(jwt_decode(token));
-        }
         return true;
       }
 
@@ -38,6 +36,19 @@ export const AuthProvider = ({ children }) => {
       logout,
       isAuthenticated,
   };
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const user = await userAPI.getUserInfo();
+        setCurrentUser(user);
+      } catch (err) {
+        setCurrentUser(null);
+        console.log(err);
+      }
+    }
+    getUserInfo();
+  }, []);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

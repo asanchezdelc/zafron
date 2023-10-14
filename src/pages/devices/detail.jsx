@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Fragment } from 'react';
+import React, { useEffect, useState, useRef, Fragment, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import { Title, TabGroup, 
   Flex, Text, Tab, 
@@ -22,21 +22,24 @@ import CapabilityForm from './capability/form';
 import { Dialog, Transition } from '@headlessui/react';
 import SettingsForm from './settings/form';
 import Hero from './onboarding/hero';
+import MqttContext from '../../services/ws/MqttContext';
+import {MQTTPacket} from '../../services/ws/MqttPacket';
 
 export default function DeviceDetail() {
-  const params = useParams();
+  const { deviceId } = useParams();
   const [device, setDevice] = useState({ mqttCredentials: {}, capabilities: []});
   const [isLoading, setIsLoading] = useState(true);
   const [isOnline, setIsOnline] = useState(false);
   const [capabilities, setCapabilities] = useState([]);
   const capabilitiesRef = useRef();
   const [uplink, setUplink] = useState(null);
-  const navigate = useNavigate();
-  const [disabled, setDisabled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const closeModal = ()=> setIsOpen(false);
   const [capability, setCapability] = useState({});
   const [name, setName] = useState('');
+  const mqttClient = useContext(MqttContext);
+  const [messages, setMessages] = useState([]);
+  const [tab, setTab] = useState(0);
 
   const setStatus = (ts, thresholdMinutes = 60) => {
     if (!ts) {
@@ -66,7 +69,8 @@ export default function DeviceDetail() {
 
   const getDevice = async () => {
     try {
-      const data = await devicesAPI.fetchOne(params.deviceId);
+      console.log('fetching device....')
+      const data = await devicesAPI.fetchOne(deviceId);
       setDevice(data);
       setCapabilities(data.capabilities);
       setIsLoading(false)
@@ -75,34 +79,6 @@ export default function DeviceDetail() {
       console.error("Error fetching device:", err);
     }
   };
-
-  const getLatest = async () => {
-    try {
-      const data = await devicesAPI.fetchLatest(params.deviceId);
-      const currentCapabilities = capabilitiesRef.current;
-      const newCapabilities = [];
-
-      if (data.measurements && data.measurements.length > 0) {
-        setUplink(data.measurements[0].timestamp);
-      }
-
-      data.measurements.forEach((measurement) => {
-          let capability = measurement.metadata;
-          capability.value = measurement.value;
-          const index = currentCapabilities.findIndex((item) => item.channel === measurement.metadata.channel);
-          if (index === -1) {
-              capability.new = true;
-              newCapabilities.push(capability);
-          }else{
-              currentCapabilities[index].value = measurement.value;
-          }
-      });
-      // Combine capabilitiesRef.current with newCapabilities and set to state
-      setCapabilities([...currentCapabilities, ...newCapabilities]);
-    } catch (err) {
-      console.error("Error fetching latest:", err);
-    }
-  }
 
   const onUpdateCapability = async (updatedCapability) => {
     // lets replace the capability from the list and update the state
@@ -163,9 +139,43 @@ export default function DeviceDetail() {
 
   useEffect(() => {
     getDevice();
-    const interval = setInterval(getLatest, 5000); 
-    return () => clearInterval(interval);
-  }, [params.deviceId]);
+  }, [deviceId]);
+
+  useEffect(() => {
+    if (mqttClient) {
+        const handleNewMessage = (topic, message) => {
+            setMessages((prevMessages) => [...prevMessages, message.toString()]);
+            const packet = new MQTTPacket({ topic, payload: message });
+            
+            if (device.serial === packet.getSerial()) {
+              console.log('device message received', packet.getSerial(), topic, packet.getCaps());
+              setStatus(new Date().getTime());
+              const currentCapabilities = capabilitiesRef.current;
+              const newCapabilities = [];
+              
+              packet.getCaps().forEach((cap) => {
+                let capability = cap;
+                const index = currentCapabilities.findIndex((item) => item.channel + '' === cap.channel + '');
+                if (index === -1) {
+                    capability.new = true;
+                    newCapabilities.push(capability);
+                }else{
+                    currentCapabilities[index].value = cap.value;
+                }
+              });
+              // Combine capabilitiesRef.current with newCapabilities and set to state
+              setCapabilities([...currentCapabilities, ...newCapabilities]);              
+            }            
+        };
+
+        mqttClient.on('message', handleNewMessage);
+
+        return () => {
+            mqttClient.off('message', handleNewMessage);
+        };
+    }
+}, [mqttClient, device]);
+
 
   useEffect(() => {
     capabilitiesRef.current = capabilities;
@@ -174,6 +184,10 @@ export default function DeviceDetail() {
   useEffect(() => {
     setName(device.name);
   }, [device]);
+
+  const onTabChange = (index) => {
+    setTab(index);
+  }
 
   return (
     <div>
@@ -196,7 +210,7 @@ export default function DeviceDetail() {
             <Text className='mt-2 text-xs'>Last Update: {toFriendlyTime(uplink)}</Text>
           </div>
         </Flex>
-        <TabGroup className="mt-6">
+        <TabGroup className="mt-6" onIndexChange={onTabChange}>
         <TabList>
           <Tab icon={CpuChipIcon}>Overview</Tab>
           <Tab icon={CircleStackIcon}>Logs</Tab>
@@ -261,13 +275,13 @@ export default function DeviceDetail() {
             </>)}
           </TabPanel>
           <TabPanel>
-            <LogPanel deviceId={device._id} />
+            { tab === 1 && <LogPanel deviceId={device._id} /> }
           </TabPanel>
           <TabPanel>
-            <RulesPage device={device} />
+            { tab === 2 && <RulesPage device={device} />}
           </TabPanel>
           <TabPanel>
-            <SettingsForm device={device} onUpdate={onUpdate}/>
+            { tab === 3 && <SettingsForm device={device} onUpdate={onUpdate}/> }
           </TabPanel>
         </TabPanels>
         </TabGroup>        

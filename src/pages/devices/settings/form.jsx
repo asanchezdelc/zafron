@@ -67,7 +67,7 @@ export default function SettingsForm({ device, onUpdate }) {
   }
 
   return (
-    <div class="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4">
       <div>
         <DeleteConfirm 
           isOpen={deleteOpen} 
