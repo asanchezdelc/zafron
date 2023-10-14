@@ -23,9 +23,9 @@ function MqttClient({ children }) {
         }
         
         // Create a new MQTT client instance
-        let wsUrl = `ws://${MQTT_SERVER}/wslive`
+        let wsUrl = `ws://${MQTT_SERVER}`
         if (process.env.REACT_APP_MQTT_SECURE === 'true') {
-          wsUrl = `wss://${MQTT_SERVER}/wslive`
+          wsUrl = `wss://${MQTT_SERVER}`
         }
         const mqttClient = mqtt.connect(wsUrl, opts);
 
@@ -36,6 +36,10 @@ function MqttClient({ children }) {
             mqttClient.subscribe(`v1/${opts.username}/things/#`, (err) => {
                 if (err) console.error("Error subscribing to topic:", err);
             });
+        });
+
+        mqttClient.on('error', (err) => {
+            console.error("MQTT client error:", err);
         });
 
         // Save MQTT client instance in state
