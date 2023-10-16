@@ -39,7 +39,6 @@ function Root() {
 }
 
 function App() {
-  console.log("App rendered");
   const cc = process.env.REACT_APP_CHAT_KEY;
   useEffect(() => {
     if (cc && cc !== '') {
@@ -51,7 +50,7 @@ function App() {
   return (
     <AuthProvider>
       <MqttClient>
-        <RouterProvider router={router} />;
+        <RouterProvider router={router} />
       </MqttClient>
     </AuthProvider>
   )

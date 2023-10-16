@@ -15,7 +15,6 @@ function MqttClient({ children }) {
         if (!isAuthenticated() || !currentUser) {
           return;
         }
-        console.log(currentUser);
         const opts = {
           username: currentUser.mqttCredentials.username,
           password: currentUser.mqttCredentials.password,
@@ -50,7 +49,7 @@ function MqttClient({ children }) {
                 mqttClient.end();
             }
         };
-    }, [currentUser]); // The empty array ensures this effect runs only once on mount and unmount
+    }, [currentUser, isAuthenticated]); // The empty array ensures this effect runs only once on mount and unmount
 
     return (
       <MqttContext.Provider value={client}>

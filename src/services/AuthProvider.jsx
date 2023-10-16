@@ -10,6 +10,7 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [isLoading, setLoading] = useState(true); // <-- New state variable
   const token = localStorage.getItem('jwt');
 
   const login = (user, token) => {
@@ -23,15 +24,17 @@ export const AuthProvider = ({ children }) => {
   };
 
   const isAuthenticated = () => {
-      if (currentUser !== null || (token && jwt_decode(token).exp > Date.now() / 1000)) {
-        return true;
-      }
+    if (isLoading) return false;
+    if (currentUser !== null || (token && jwt_decode(token).exp > Date.now() / 1000)) {
+      return true;
+    }
 
-      return false;
+    return false;
   };
 
   const value = {
       currentUser,
+      isLoading,
       login,
       logout,
       isAuthenticated,
@@ -42,13 +45,16 @@ export const AuthProvider = ({ children }) => {
       try {
         const user = await userAPI.getUserInfo();
         setCurrentUser(user);
+        setLoading(false);
       } catch (err) {
-        setCurrentUser(null);
-        console.log(err);
+        if (err.status && err.status === 401) {
+          setCurrentUser(null);
+          logout();
+        }
       }
     }
     getUserInfo();
-  }, []);
+  }, [token]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 };

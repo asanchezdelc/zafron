@@ -69,7 +69,6 @@ export default function DeviceDetail() {
 
   const getDevice = async () => {
     try {
-      console.log('fetching device....')
       const data = await devicesAPI.fetchOne(deviceId);
       setDevice(data);
       setCapabilities(data.capabilities);
