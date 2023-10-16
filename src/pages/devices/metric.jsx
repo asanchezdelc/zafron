@@ -1,12 +1,14 @@
-import { AreaChart, Text, Flex, Card, Metric, Button, Icon } from "@tremor/react";
+import { AreaChart, Text, Flex, Card, Metric, Button, Icon, Tracker } from "@tremor/react";
 import { PencilSquareIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import * as deviceAPI from "../../services/device";
 import { useState, useEffect } from "react";
 import { toFriendlyTime } from "../../services/utils";
 import Toggle from "../../components/Toggle";
-export default function MetricCard({ deviceId, capability, onAddCapability, onEditCapability }) {
+
+export default function MetricCard({ deviceId, capability, onAddCapability, onEditCapability, onSwitchToggle }) {
   const [data, setData] = useState([]);
   const [isActuator, setIsActuator] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   function transformData(data) {
     return data.map(item => ({
@@ -31,6 +33,17 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
     }
 
   }, [capability._id, capability.channel, capability.new, capability.type, deviceId]);
+
+  const handleToggle = (value) => {
+    console.log('Toggle', value);
+    if (value) {
+      capability.value = 1;
+    } else {
+      capability.value = 0;
+    }
+
+    onSwitchToggle(capability);
+  }
 
   return (
     <Card decoration="top" decorationColor={capability.new ? 'green':'indigo'}>
@@ -66,9 +79,13 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
         showYAxis={false}
         showLegend={false}
       /> )}
-      { isActuator && <Flex justifyContent="center" alignItems="center">
-          <Toggle />
-        </Flex>}
+      { isActuator && 
+        <div>
+          <Flex justifyContent="center" alignItems="center">
+            <Toggle value={capability.value} onToggle={handleToggle} />
+          </Flex>
+        </div>
+        }
     </Card>
   );
 }

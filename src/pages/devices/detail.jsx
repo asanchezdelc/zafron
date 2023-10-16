@@ -28,9 +28,8 @@ import CapabilityForm from './capability/form';
 import SettingsForm from './settings/form';
 import Hero from './onboarding/hero';
 import MqttContext from '../../services/ws/MqttContext';
-import {MQTTPacket} from '../../services/ws/MqttPacket';
+import { MQTTPacket } from '../../services/ws/MqttPacket';
 import CapabilityDialog from './capability/dialog';
-import ActuatorForm from './capability/actuator';
 
 export default function DeviceDetail() {
   const { deviceId } = useParams();
@@ -202,6 +201,14 @@ export default function DeviceDetail() {
     setTab(index);
   }
 
+  const onSwitchToggle = async (capability) => {
+    console.log('switch toggled', capability)
+    // value
+    const topic = `v1/${mqttClient.options.username}/things/${device.serial}/cmd/${capability.channel}`;
+    console.log('topic', topic);
+    await mqttClient.publish(topic, capability.value+'');
+  }
+
   return (
     <div>
       <Nav />
@@ -257,6 +264,7 @@ export default function DeviceDetail() {
                   capability={reading} 
                   onAddCapability={onAddCapability}
                   onEditCapability={onEditCapClick} 
+                  onSwitchToggle={onSwitchToggle}
                 /> 
                 ))}
               </Grid>

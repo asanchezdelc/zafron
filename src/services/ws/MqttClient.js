@@ -15,7 +15,6 @@ function MqttClient({ children }) {
         if (!isAuthenticated() || !currentUser) {
           return;
         }
-        console.log(currentUser);
         const opts = {
           username: currentUser.mqttCredentials.username,
           password: currentUser.mqttCredentials.password,
@@ -23,7 +22,11 @@ function MqttClient({ children }) {
         }
         
         // Create a new MQTT client instance
-        const mqttClient = mqtt.connect(`ws://${MQTT_SERVER}/wslive`, opts);
+        let wsUrl = `ws://${MQTT_SERVER}`
+        if (process.env.REACT_APP_MQTT_SECURE === 'true') {
+          wsUrl = `wss://${MQTT_SERVER}`
+        }
+        const mqttClient = mqtt.connect(wsUrl, opts);
 
         mqttClient.on('connect', () => {
             setIsConnected(true);
@@ -34,6 +37,10 @@ function MqttClient({ children }) {
             });
         });
 
+        mqttClient.on('error', (err) => {
+            console.error("MQTT client error:", err);
+        });
+
         // Save MQTT client instance in state
         setClient(mqttClient);
 
@@ -42,7 +49,7 @@ function MqttClient({ children }) {
                 mqttClient.end();
             }
         };
-    }, [currentUser]); // The empty array ensures this effect runs only once on mount and unmount
+    }, [currentUser, isAuthenticated]); // The empty array ensures this effect runs only once on mount and unmount
 
     return (
       <MqttContext.Provider value={client}>

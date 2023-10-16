@@ -3,7 +3,6 @@ import { Flex, Button, TextInput, NumberInput, Select, SelectItem } from '@tremo
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import Alert from '../../../components/alert';
 
-const properties = ['type', 'channel', 'unit', 'value'];
 
 export default function ActuatorForm({ onCancel, onAction, onRemove, capability, formMode='create'}) {
   const [name, setName] = useState('');
