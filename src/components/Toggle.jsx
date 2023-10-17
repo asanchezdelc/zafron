@@ -14,7 +14,7 @@ export default function Toggle({ onToggle, value, disabled }) {
   };
 
   return (
-    <div className="mt-10">
+    <div className="mt-5 rounded-full p-3 bg-gray-100 drop-shadow-sm">
       <Flex>
         <label className="relative inline-flex items-center cursor-pointer">
           <input type="checkbox" className="sr-only peer" checked={isOn} onChange={handleChange} />

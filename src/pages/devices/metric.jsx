@@ -60,10 +60,14 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
         )}
         {capability.new && (<Button variant="light" onClick={() => onAddCapability(capability)} size="sm" className="ml-2 border-1" icon={PlusCircleIcon}>Add</Button>)}
       </Flex>
-      <Flex className="space-x-3 truncate" justifyContent="start" alignItems="baseline">
-        {/* <Icon icon={BoltIcon} variant="light" size="xl" color={'indigo'} /> */}
-        <Metric>{capability.value}</Metric>
-        <Text>{capability.unit}</Text>        
+      <Flex className="" justifyContent="between" alignItems="baseline">
+        <div>
+          <Flex className="space-x-3 truncate" justifyContent="start" alignItems="baseline">
+            <Metric>{capability.value}</Metric>
+            <Text>{capability.unit}</Text> 
+          </Flex>
+        </div>
+        <Text>{`Ch. ${capability.channel}`}</Text>
       </Flex>
       { !capability.new && !isActuator && (
        <AreaChart

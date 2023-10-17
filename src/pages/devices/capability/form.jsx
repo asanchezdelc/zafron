@@ -40,6 +40,7 @@ export default function CapabilityForm({ onCancel, onAction, onRemove, capabilit
     if (capability.type === 'digital_actuator' || capability.type === 'analog_actuator') {
       setIsActuator(true);
       setChannel(capability.channel);
+      setDatatype(capability.type);
     }
 
   }, [capability]);
@@ -116,20 +117,21 @@ export default function CapabilityForm({ onCancel, onAction, onRemove, capabilit
           Cancel
         </Button>
         <Flex>
+          { (!capability.new) ? 
         <button
           className="mt-2 ml-2 items-center justify-center text-red-500 text-sm hover:underline"
           onClick={() => onRemove(capability)}
         >
           {/* <PlusIcon /> */}
           <span>Remove Capability</span>
-        </button>
+        </button>: <div></div> }
         <button
           disabled={disabled}
           className="mt-2 flex items-center justify-center text-white bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
           onClick={onSubmit}
         >
           {/* <PlusIcon /> */}
-          <span>Update</span>
+          <span>{capability.new ? 'Create':'Update'}</span>
         </button>
         </Flex>
         </Flex>

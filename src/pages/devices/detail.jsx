@@ -47,7 +47,7 @@ export default function DeviceDetail() {
   const [messages, setMessages] = useState([]);
   const [tab, setTab] = useState(0);
 
-  const setStatus = (ts, thresholdMinutes = 60) => {
+  const setStatus = (ts, thresholdMinutes = 5) => {
     if (!ts) {
       setIsOnline(false);
       return;
@@ -102,10 +102,14 @@ export default function DeviceDetail() {
       await devicesAPI.patchDevice(device._id, { capabilities: [capability] });
       // lets replace the capability from the list and update the state
       const index = capabilities.findIndex((item) => item.channel === capability.channel);
+      if (index === -1) {
+        capabilities.push(capability);
+      }
       capabilities[index] = capability;
 
       // update existing capabilities with updated capability
       setCapabilities([...capabilities]);
+      setIsOpen(false);
     } catch (err) {
       console.error("Error adding capability:", err);
     }
@@ -205,8 +209,9 @@ export default function DeviceDetail() {
     console.log('switch toggled', capability)
     // value
     const topic = `v1/${mqttClient.options.username}/things/${device.serial}/cmd/${capability.channel}`;
-    console.log('topic', topic);
-    await mqttClient.publish(topic, capability.value+'');
+    const seq = Math.floor(Math.random() * 1000000);
+    const payload = `${seq},${capability.value}`;
+    await mqttClient.publish(topic, payload);
   }
 
   return (
