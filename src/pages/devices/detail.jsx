@@ -6,24 +6,31 @@ import { Title, TabGroup,
   Badge, 
   TabPanels,
   Icon,
-  TextInput,
+  Button,
   Card
 } from '@tremor/react';
 import Nav from '../../components/nav';
 import * as devicesAPI from '../../services/device';
 import LogPanel from './log/logpanel';
 import MetricCard from './metric';
-import { WifiIcon, CpuChipIcon,  BellAlertIcon, Cog6ToothIcon, CircleStackIcon } from '@heroicons/react/24/outline';
+import { 
+  WifiIcon, 
+  CpuChipIcon,  
+  BellAlertIcon, 
+  Cog6ToothIcon, 
+  CircleStackIcon,
+  CommandLineIcon,
+  PlusCircleIcon
+} from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
-import { useNavigate } from "react-router-dom";
 import { toFriendlyTime } from '../../services/utils';
 import RulesPage from './rules/index';
 import CapabilityForm from './capability/form';
-import { Dialog, Transition } from '@headlessui/react';
 import SettingsForm from './settings/form';
 import Hero from './onboarding/hero';
 import MqttContext from '../../services/ws/MqttContext';
-import {MQTTPacket} from '../../services/ws/MqttPacket';
+import { MQTTPacket } from '../../services/ws/MqttPacket';
+import CapabilityDialog from './capability/dialog';
 
 export default function DeviceDetail() {
   const { deviceId } = useParams();
@@ -41,7 +48,7 @@ export default function DeviceDetail() {
   const [messages, setMessages] = useState([]);
   const [tab, setTab] = useState(0);
 
-  const setStatus = (ts, thresholdMinutes = 60) => {
+  const setStatus = (ts, thresholdMinutes = 5) => {
     if (!ts) {
       setIsOnline(false);
       return;
@@ -67,19 +74,10 @@ export default function DeviceDetail() {
     }
   }
 
-  const getDevice = async () => {
-    try {
-      const data = await devicesAPI.fetchOne(deviceId);
-      setDevice(data);
-      setCapabilities(data.capabilities);
-      setIsLoading(false)
-      setStatus(data.lastOnline);
-    } catch (err) {
-      console.error("Error fetching device:", err);
-    }
-  };
-
   const onUpdateCapability = async (updatedCapability) => {
+    if (updatedCapability.new) {
+      return onAddCapability(updatedCapability);
+    }
     // lets replace the capability from the list and update the state
     const index = capabilities.findIndex((item) => item.channel === updatedCapability.channel);
     capabilities[index] = updatedCapability;
@@ -105,10 +103,14 @@ export default function DeviceDetail() {
       await devicesAPI.patchDevice(device._id, { capabilities: [capability] });
       // lets replace the capability from the list and update the state
       const index = capabilities.findIndex((item) => item.channel === capability.channel);
+      if (index === -1) {
+        capabilities.push(capability);
+      }
       capabilities[index] = capability;
 
       // update existing capabilities with updated capability
       setCapabilities([...capabilities]);
+      setIsOpen(false);
     } catch (err) {
       console.error("Error adding capability:", err);
     }
@@ -127,8 +129,13 @@ export default function DeviceDetail() {
     }
   }
 
-  const onEditCapability = async (capability) => {
+  const onEditCapClick = async (capability) => {
     setCapability(capability);
+    setIsOpen(true);
+  }
+
+  const onAddActuator = async () => {
+    setCapability({ type: 'digital_actuator', channel: 0, name: 'LED', unit: null, new: true });
     setIsOpen(true);
   }
 
@@ -137,6 +144,17 @@ export default function DeviceDetail() {
   }
 
   useEffect(() => {
+    const getDevice = async () => {
+      try {
+        const data = await devicesAPI.fetchOne(deviceId);
+        setDevice(data);
+        setCapabilities(data.capabilities);
+        setIsLoading(false)
+        setStatus(data.lastOnline);
+      } catch (err) {
+        console.error("Error fetching device:", err);
+      }
+    };
     getDevice();
   }, [deviceId]);
 
@@ -188,6 +206,15 @@ export default function DeviceDetail() {
     setTab(index);
   }
 
+  const onSwitchToggle = async (capability) => {
+    console.log('switch toggled', capability)
+    // value
+    const topic = `v1/${mqttClient.options.username}/things/${device.serial}/cmd/${capability.channel}`;
+    const seq = Math.floor(Math.random() * 1000000);
+    const payload = `${seq},${capability.value}`;
+    await mqttClient.publish(topic, payload);
+  }
+
   return (
     <div>
       <Nav />
@@ -210,79 +237,52 @@ export default function DeviceDetail() {
           </div>
         </Flex>
         <TabGroup className="mt-6" onIndexChange={onTabChange}>
-        <TabList>
-          <Tab icon={CpuChipIcon}>Overview</Tab>
-          <Tab icon={CircleStackIcon}>Logs</Tab>
-          <Tab icon={BellAlertIcon}>Rules</Tab>
-          <Tab icon={Cog6ToothIcon}>Settings</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            {isLoading ? <Spinner /> : (
-            <>{(!capabilities || capabilities.length === 0) && <Hero device={device} />}
-            <Transition appear show={isOpen} as={Fragment}>
-          <Dialog as="div" className="relative z-50" onClose={closeModal}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-gray-900 bg-opacity-25" />
-            </Transition.Child>
-            <div className="fixed inset-0 overflow-y-auto">
-              <div className="flex min-h-full items-center justify-center p-4 text-center">
-                <Transition.Child
-                  as={Fragment}
-                  enter="ease-out duration-300"
-                  enterFrom="opacity-0 scale-95"
-                  enterTo="opacity-100 scale-100"
-                  leave="ease-in duration-200"
-                  leaveFrom="opacity-100 scale-100"
-                  leaveTo="opacity-0 scale-95"
-                >
-                  <Dialog.Panel
-                    className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
-                                      p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
-                  >
-                    <CapabilityForm 
-                      onCancel={closeModal} 
-                      onAction={onUpdateCapability} 
-                      onRemove={onDeleteCapability}
-                      capability={capability} 
-                    />
-                  </Dialog.Panel>
-                </Transition.Child>
-              </div>
-            </div>
-          </Dialog>
-        </Transition>
-            <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
-              { capabilities && capabilities.map((reading, index) => ( 
-              <MetricCard 
-                key={index} 
-                deviceId={device._id} 
-                capability={reading} 
-                onAddCapability={onAddCapability}
-                onEditCapability={onEditCapability} 
-              /> 
-              ))}
-            </Grid>
-            </>)}
-          </TabPanel>
-          <TabPanel>
-            { tab === 1 && <LogPanel deviceId={device._id} /> }
-          </TabPanel>
-          <TabPanel>
-            { tab === 2 && <RulesPage device={device} />}
-          </TabPanel>
-          <TabPanel>
-            { tab === 3 && <SettingsForm device={device} onUpdate={onUpdate}/> }
-          </TabPanel>
-        </TabPanels>
+          <TabList>
+            <Tab style={{"overflow": "unset"}} icon={CpuChipIcon}>Overview</Tab>
+            <Tab style={{"overflow": "unset"}} icon={CircleStackIcon}>Logs</Tab>
+            <Tab style={{"overflow": "unset"}} icon={BellAlertIcon}>Rules</Tab>
+            <Tab style={{"overflow": "unset"}} icon={Cog6ToothIcon}>Settings</Tab>
+            { tab === 0 &&
+            <Flex justifyContent='end'>
+            <Button variant='light' icon={PlusCircleIcon} size='xs' onClick={onAddActuator}>New Command</Button></Flex> }
+          </TabList>
+          <TabPanels>
+            <TabPanel className='mt-0'>
+              {isLoading ? <Spinner /> : (
+              <>{(!capabilities || capabilities.length === 0) && <Hero device={device} />}
+                <CapabilityDialog isOpen={isOpen} closeModal={closeModal}>
+                  <CapabilityForm 
+                    onCancel={closeModal} 
+                    onAction={onUpdateCapability} 
+                    onRemove={onDeleteCapability}
+                    capability={capability}
+                    formMode='edit'
+                  />
+                </CapabilityDialog>
+                <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
+                  { capabilities && capabilities.map((reading, index) => ( 
+                  <MetricCard 
+                    key={index} 
+                    deviceId={device._id} 
+                    capability={reading} 
+                    onAddCapability={onAddCapability}
+                    onEditCapability={onEditCapClick} 
+                    onSwitchToggle={onSwitchToggle}
+                  /> 
+                  ))}
+                </Grid>
+              </>)}
+            </TabPanel>
+            <TabPanel>
+              { tab === 1 && <LogPanel deviceId={device._id} /> }
+            </TabPanel>
+            <TabPanel>
+              { tab === 2 && <RulesPage device={device} />}
+            </TabPanel>
+            <TabPanel>
+              { tab === 3 && <SettingsForm device={device} onUpdate={onUpdate}/> }
+            </TabPanel>
+          </TabPanels>
         </TabGroup>        
       </main>
     </div>

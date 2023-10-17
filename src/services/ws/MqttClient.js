@@ -32,9 +32,12 @@ function MqttClient({ children }) {
             setIsConnected(true);
             
             // Subscribe to a topic
-            mqttClient.subscribe(`v1/${opts.username}/things/#`, (err) => {
+            mqttClient.subscribe(`v1/${opts.username}/things/+/data/+`, (err) => {
                 if (err) console.error("Error subscribing to topic:", err);
             });
+            mqttClient.subscribe(`v1/${opts.username}/things/+/response`, (err) => {
+              if (err) console.error("Error subscribing to topic:", err);
+          });
         });
 
         mqttClient.on('error', (err) => {

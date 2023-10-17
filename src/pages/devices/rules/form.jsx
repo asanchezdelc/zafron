@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Title, Flex, Button, TextInput, Select, SelectItem } from '@tremor/react';
-import CloseIcon from '../../../components/icons/CloseIcon';
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
 import Alert from '../../../components/alert';
 import PlusIcon from '../../../components/icons/PlusIcon';
 
@@ -76,7 +77,7 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
       <Flex className='border-b pb-2 mb-2'>
         <h3 className='text-lg font-semibold text-gray-700'>{title}</h3>
         <button type="button" onClick={onCancel} className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
-          <CloseIcon />
+          <XMarkIcon className='h-5' />
           <span className="sr-only">Close modal</span>
         </button>
       </Flex>
