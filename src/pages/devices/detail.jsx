@@ -244,7 +244,7 @@ export default function DeviceDetail() {
             <Tab style={{"overflow": "unset"}} icon={Cog6ToothIcon}>Settings</Tab>
             { tab === 0 &&
             <Flex justifyContent='end'>
-            <Button variant='light' icon={PlusCircleIcon} size='xs' onClick={onAddActuator}>New Actuator</Button></Flex> }
+            <Button variant='light' icon={PlusCircleIcon} size='xs' onClick={onAddActuator}>New Command</Button></Flex> }
           </TabList>
           <TabPanels>
             <TabPanel className='mt-0'>
