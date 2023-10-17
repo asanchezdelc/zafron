@@ -19,7 +19,8 @@ import {
   BellAlertIcon, 
   Cog6ToothIcon, 
   CircleStackIcon,
-  CommandLineIcon
+  CommandLineIcon,
+  PlusCircleIcon
 } from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
 import { toFriendlyTime } from '../../services/utils';
@@ -236,55 +237,52 @@ export default function DeviceDetail() {
           </div>
         </Flex>
         <TabGroup className="mt-6" onIndexChange={onTabChange}>
-        <TabList>
-          <Tab icon={CpuChipIcon}>Overview</Tab>
-          <Tab icon={CircleStackIcon}>Logs</Tab>
-          <Tab icon={BellAlertIcon}>Rules</Tab>
-          <Tab icon={Cog6ToothIcon}>Settings</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel className='mt-0'>
-            {isLoading ? <Spinner /> : (
-            <>{(!capabilities || capabilities.length === 0) && <Hero device={device} />}
-              <CapabilityDialog isOpen={isOpen} closeModal={closeModal}>
-                <CapabilityForm 
-                  onCancel={closeModal} 
-                  onAction={onUpdateCapability} 
-                  onRemove={onDeleteCapability}
-                  capability={capability}
-                  formMode='edit'
-                />
-              </CapabilityDialog>
-              <div className=" bg-gray-100 border-b-1 h-12 p-2">
-                <Flex justifyContent='end'>
-                  {/* <Button variant='secondary' size='xs' className='mr-2' icon={CommandLineIcon}>Debug</Button> */}
-                  <Button variant='secondary' size='xs' onClick={onAddActuator}>New Actuator</Button>
-                </Flex>
-              </div>
-              <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
-                { capabilities && capabilities.map((reading, index) => ( 
-                <MetricCard 
-                  key={index} 
-                  deviceId={device._id} 
-                  capability={reading} 
-                  onAddCapability={onAddCapability}
-                  onEditCapability={onEditCapClick} 
-                  onSwitchToggle={onSwitchToggle}
-                /> 
-                ))}
-              </Grid>
-            </>)}
-          </TabPanel>
-          <TabPanel>
-            { tab === 1 && <LogPanel deviceId={device._id} /> }
-          </TabPanel>
-          <TabPanel>
-            { tab === 2 && <RulesPage device={device} />}
-          </TabPanel>
-          <TabPanel>
-            { tab === 3 && <SettingsForm device={device} onUpdate={onUpdate}/> }
-          </TabPanel>
-        </TabPanels>
+          <TabList>
+            <Tab style={{"overflow": "unset"}} icon={CpuChipIcon}>Overview</Tab>
+            <Tab style={{"overflow": "unset"}} icon={CircleStackIcon}>Logs</Tab>
+            <Tab style={{"overflow": "unset"}} icon={BellAlertIcon}>Rules</Tab>
+            <Tab style={{"overflow": "unset"}} icon={Cog6ToothIcon}>Settings</Tab>
+            { tab === 0 &&
+            <Flex justifyContent='end'>
+            <Button variant='light' icon={PlusCircleIcon} size='xs' onClick={onAddActuator}>New Actuator</Button></Flex> }
+          </TabList>
+          <TabPanels>
+            <TabPanel className='mt-0'>
+              {isLoading ? <Spinner /> : (
+              <>{(!capabilities || capabilities.length === 0) && <Hero device={device} />}
+                <CapabilityDialog isOpen={isOpen} closeModal={closeModal}>
+                  <CapabilityForm 
+                    onCancel={closeModal} 
+                    onAction={onUpdateCapability} 
+                    onRemove={onDeleteCapability}
+                    capability={capability}
+                    formMode='edit'
+                  />
+                </CapabilityDialog>
+                <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
+                  { capabilities && capabilities.map((reading, index) => ( 
+                  <MetricCard 
+                    key={index} 
+                    deviceId={device._id} 
+                    capability={reading} 
+                    onAddCapability={onAddCapability}
+                    onEditCapability={onEditCapClick} 
+                    onSwitchToggle={onSwitchToggle}
+                  /> 
+                  ))}
+                </Grid>
+              </>)}
+            </TabPanel>
+            <TabPanel>
+              { tab === 1 && <LogPanel deviceId={device._id} /> }
+            </TabPanel>
+            <TabPanel>
+              { tab === 2 && <RulesPage device={device} />}
+            </TabPanel>
+            <TabPanel>
+              { tab === 3 && <SettingsForm device={device} onUpdate={onUpdate}/> }
+            </TabPanel>
+          </TabPanels>
         </TabGroup>        
       </main>
     </div>
