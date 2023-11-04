@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment, useContext } from 'react';
+import { Responsive, WidthProvider } from "react-grid-layout";
 import { useParams } from 'react-router-dom';
 import { Title, TabGroup, 
   Flex, Text, Tab, 
@@ -31,6 +32,32 @@ import Hero from './onboarding/hero';
 import MqttContext from '../../services/ws/MqttContext';
 import { MQTTPacket } from '../../services/ws/MqttPacket';
 import CapabilityDialog from './capability/dialog';
+
+const ResponsiveGridLayout = WidthProvider(Responsive);
+
+
+
+const layout = [
+  {
+    "w": 3,
+    "h": 1,
+    "x": 0,
+    "y": 0,
+    "i": "0"
+  },
+  {
+    "w": 3,
+    "h": 1,
+    "x": 3,
+    "y": 0,
+    "i": "1"
+  }
+]
+
+const layouts = {
+  lg: layout,
+  md: layout
+}
 
 export default function DeviceDetail() {
   const { deviceId } = useParams();
@@ -215,6 +242,11 @@ export default function DeviceDetail() {
     await mqttClient.publish(topic, payload);
   }
 
+  const onLayoutChange = (layout, layouts) => {
+    console.log(JSON.stringify(layout));
+    console.log('layout changed', layout, layouts);
+  }
+
   return (
     <div>
       <Nav />
@@ -259,7 +291,29 @@ export default function DeviceDetail() {
                     formMode='edit'
                   />
                 </CapabilityDialog>
-                <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
+                <ResponsiveGridLayout 
+                  className="layout"
+                  measureBeforeMount={false}
+                  onLayoutChange={onLayoutChange}
+                  layouts={layouts}
+                  currentBreakpoint='lg'
+                  breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
+                  cols={{ lg: 12, md: 10, sm: 6, xs: 4, xxs: 2 }}
+                  rowHeight={250}
+                  >
+                { capabilities && capabilities.map((reading, index) => ( 
+                <div key={index+''}>
+                  <MetricCard
+                    deviceId={device._id} 
+                    capability={reading} 
+                    onAddCapability={onAddCapability}
+                    onEditCapability={onEditCapClick} 
+                    onSwitchToggle={onSwitchToggle}
+                  /> 
+                    </div>
+                  ))}
+                </ResponsiveGridLayout>
+                {/* <Grid numItemsMd={2} numItemsLg={3} className="gap-6 mt-6">              
                   { capabilities && capabilities.map((reading, index) => ( 
                   <MetricCard 
                     key={index} 
@@ -270,7 +324,7 @@ export default function DeviceDetail() {
                     onSwitchToggle={onSwitchToggle}
                   /> 
                   ))}
-                </Grid>
+                </Grid> */}
               </>)}
             </TabPanel>
             <TabPanel>
