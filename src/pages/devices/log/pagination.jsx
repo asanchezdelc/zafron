@@ -2,7 +2,6 @@ import { useEffect } from "react";
 
 export default function Pagination ({ currentPage, totalPages, onChange }) {
   useEffect(() => {
-    console.log('Pagination: currentPage', currentPage);
   }, [currentPage]);
   return (
     <div className="flex flex-col items-center">

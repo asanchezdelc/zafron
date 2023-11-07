@@ -6,6 +6,7 @@ import { useAuth } from '../services/AuthProvider';
 
 const navigation = [
   { name: 'Devices', href: '/devices' },
+  { name: 'Documentation', href: 'https://zafron.dev/docs/intro', external: true },
   // { name: 'Dashboards', href: '/dashboards' }
 ];
 
@@ -65,6 +66,8 @@ export default function Navbar({ user }) {
                         'inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium'
                       )}
                       aria-current={pathname === item.href ? 'page' : undefined}
+                      target={item.external ? '_blank' : undefined}
+                      rel={item.external ? 'noopener noreferrer' : undefined}
                     >
                       {item.name}
                     </a>

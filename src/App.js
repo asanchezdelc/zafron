@@ -14,6 +14,9 @@ import ForgotPage from './pages/public/forgot';
 import ResetPasswordPage from './pages/public/reset';
 import DeviceDetail from './pages/devices/detail';
 import { AuthProvider } from './services/AuthProvider';
+import { Crisp } from "crisp-sdk-web";
+import { useEffect } from 'react';
+import MqttClient from './services/ws/MqttClient';
 
 const router = createBrowserRouter([
   { path: "*", Component: Root },
@@ -36,9 +39,21 @@ function Root() {
 }
 
 function App() {
-  return <AuthProvider>
-      <RouterProvider router={router} />;
+  const cc = process.env.REACT_APP_CHAT_KEY;
+  useEffect(() => {
+    if (cc && cc !== '') {
+      Crisp.configure(cc);
+    }
+  }, [cc]);
+  
+
+  return (
+    <AuthProvider>
+      <MqttClient>
+        <RouterProvider router={router} />
+      </MqttClient>
     </AuthProvider>
+  )
 }
 
 export default App;

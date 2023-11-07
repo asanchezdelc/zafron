@@ -1,0 +1,16 @@
+<svg
+  width="32"
+  height="32"
+  viewBox="0 0 32 32"
+  fill="none"
+  className="text-gray-100"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <rect
+    width="100%"
+    height="100%"
+    rx="16"
+    fill="currentColor"
+  />
+      <text x="16" y="22" fontFamily="Arial" fontSize="20" fill="black" textAnchor="middle">Z</text>
+</svg>

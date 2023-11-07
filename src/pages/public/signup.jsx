@@ -41,7 +41,7 @@ export default function RegisterPage() {
       <main className="p-4 md:p-10 mx-auto max-w-7xl">
         <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0'>
           <a href="/" className="flex items-center mb-6 text-2xl font-semibold">
-            <img class="w-12 h-12 mr-2" src="https://zafron.dev/img/zafron.png" alt="logo" />
+            <img className="w-12 h-12 mr-2" src="https://zafron.dev/img/zafron.png" alt="logo" />
             Zafron    
             </a>
           <Card className="max-w-xs">
