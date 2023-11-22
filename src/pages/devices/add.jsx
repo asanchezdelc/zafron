@@ -9,6 +9,14 @@ export default function AddDevice({onCancel, onAction}) {
   let [serial, setSerial] = useState(generateSerial())
   let [name, setName] = useState(generateDeviceName())
 
+  const onAddDevice = async (e) => {
+    e.preventDefault();
+    try {
+      onAction({ name, type, serial });
+    } catch (err) {
+      console.error("Error adding device:", err);
+    }
+  }
   return (
     /* Use `initialFocus` to force initial focus to a specific ref. */
     <Dialog
@@ -40,7 +48,7 @@ export default function AddDevice({onCancel, onAction}) {
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">Serial</label>
-            <TextInput value={serial} onChange={(e) => setSerial(e.target.value)} placeholder="Device Serial" />
+            <TextInput value={serial} onChange={(e) => setSerial(e.target.value)} placeholder="Device Serial" disabled={true} />
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">Type</label>
@@ -51,7 +59,7 @@ export default function AddDevice({onCancel, onAction}) {
             </div>
             <Flex justifyContent="end" className="space-x-2 border-t pt-4 mt-8">
               <Button variant="secondary" size='xs' onClick={() => onCancel(false)}>Cancel</Button>
-              <Button variant="primary" size='xs' onClick={() => onAction({ name, type, serial})} className='mr-6'>Add Device</Button>
+              <Button variant="primary" size='xs' onClick={onAddDevice} className='mr-6'>Add Device</Button>
             </Flex>
          </form>
       </Dialog.Panel>
