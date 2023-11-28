@@ -79,7 +79,7 @@ export default function RulesPage({device}) {
   }
 
   return (
-    <div className='mt-8'>
+    <div className='mt-5'>
       <Card>
         <Flex>
           <div>

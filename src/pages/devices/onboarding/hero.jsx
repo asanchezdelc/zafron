@@ -24,7 +24,7 @@ const links = [
 
 export default function Hero({ device }) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-4 mt-5">
       <div>
         <Card>
           <Title>Getting Started</Title>

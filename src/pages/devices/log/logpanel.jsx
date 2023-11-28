@@ -58,7 +58,7 @@ export default function LogPanel({ deviceId }) {
 
   return (
     <div>
-      <Card className="mt-6">
+      <Card className="mt-5">
         <Flex>
           <div>
           <Flex justifyContent="start" className="space-x-2">
