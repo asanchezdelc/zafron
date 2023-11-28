@@ -1,6 +1,8 @@
 # Zafron
 
-A rudenmentary and simple dashboard for devices such as Arduinos, ESP family, RaspberryPi, and more. This project was brought up to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. 
+A rudimentary and simple dashboard for devices such as Arduinos, ESP family, RaspberryPi, and more. This project was brought up to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. 
+
+[Documentation](https://zafron.dev/docs)
 
 **Work in progress.**
 
@@ -12,6 +14,9 @@ A rudenmentary and simple dashboard for devices such as Arduinos, ESP family, Ra
 - MongoDB
 - Redis
 - npm
+
+## Migrate Cayenne Projects
+Migrating Cayenne projects to Zafron is easy. Zafron is a drop-in replacement for Cayenne. The only thing you need to do is change the MQTT server hostname and the MQTT credentials. [Learn More](https://zafron.dev/docs/cayenne)
 
 ## Getting Started
 The quickest way to get started is to use docker-compose. This will start the server and the database. You will need to provide the MQTT credentials in the docker-compose.yml file. 
