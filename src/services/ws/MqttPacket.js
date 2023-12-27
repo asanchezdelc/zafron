@@ -36,17 +36,23 @@ export class MQTTPacket {
         }
 
         const parts = payload.split(',');
+        // payload can be of two forms: temp,k=22 or 22
+        let uplink = {};
         if (parts.length !== 2) {
-          return;
-        }
-
-        const vals = parts[1].split('=');
-
-        const uplink = {
-          type: parts[0],
-          unit: vals[0],
-          value: vals[1],
-          channel: channel,
+          uplink = {
+            type: 'virtual',
+            unit: '',
+            value: payload,
+            channel: channel,
+          }
+        } else {
+          const vals = parts[1].split('=');
+          uplink = {
+            type: parts[0],
+            unit: vals[0],
+            value: vals[1],
+            channel: channel,
+          }
         }
         this.capabilities.push(uplink);
       } catch (error) {
