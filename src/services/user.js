@@ -23,3 +23,11 @@ export const resetPassword = (token, password) => {
         token,
     });
 }
+
+export const updateProfile = (data) => {
+  // { name: 'name', password: 'password' }
+    return request(`${baseURL}/me`, {
+        method: 'PUT',
+        json: data,
+    });
+}
