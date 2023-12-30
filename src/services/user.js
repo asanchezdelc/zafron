@@ -31,3 +31,9 @@ export const updateProfile = (data) => {
         json: data,
     });
 }
+
+export const deleteAccount = () => {
+    return request(`${baseURL}/me`, {
+        method: 'DELETE',
+    });
+}
