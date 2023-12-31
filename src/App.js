@@ -13,6 +13,7 @@ import RegisterPage from './pages/public/signup';
 import ForgotPage from './pages/public/forgot';
 import ResetPasswordPage from './pages/public/reset';
 import DeviceDetail from './pages/devices/detail';
+import Account from './pages/account/settings';
 import { AuthProvider } from './services/AuthProvider';
 import { Crisp } from "crisp-sdk-web";
 import { useEffect } from 'react';
@@ -31,6 +32,7 @@ function Root() {
         <Route path="/forgot-password" element={<ForgotPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route element={<PrivateRoutes/>}>
+          <Route path="/account" element={<Account />} />
           <Route path="/devices" element={<Devices />} />
           <Route path="/devices/:deviceId" element={<DeviceDetail />} />
         </Route>

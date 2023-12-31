@@ -1,7 +1,33 @@
 import React, { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from "@headlessui/react";
+import {
+  TextInput
+} from '@tremor/react';
 
-export default function DeleteConfirm({ isOpen, onConfirm, closeModal, message }) {
+export default function DeleteConfirm({ isOpen, onConfirm, closeModal, message, inputConfirm }) {
+  const [deleteMe, setDeleteMe] = useState('');
+  const [errors, setErrors] = useState('');
+  const onConfirmClick = () => {
+    if (inputConfirm) {
+      if (deleteMe !== 'delete me') {
+        setErrors('Please enter "delete me"');
+        return;
+      } else {
+        setDeleteMe('');
+        onConfirm();
+        return;
+      }
+    }
+
+    return onConfirm();
+    
+  };
+
+  const onInputTextChange = (e) => {
+    setErrors('');
+    setDeleteMe(e.target.value);
+  }
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
         <Dialog as="div" className="relative z-50" onClose={closeModal}>
@@ -36,12 +62,17 @@ export default function DeleteConfirm({ isOpen, onConfirm, closeModal, message }
 
               <p className="mb-4 text-gray-700">{message}</p>
               </div>
+              {inputConfirm && 
+              <div className="relative p-4 text-center bg-white">
+                <TextInput placeholder="Enter 'delete me'" type="text" error={errors !== ''} errorMessage={errors} onChange={onInputTextChange} />
+              </div>
+              }
                   
                   <div className="flex justify-center items-center space-x-4">
                 <button onClick={closeModal} type="button" className="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-primary-300 hover:text-gray-900 focus:z-10">
                     No, cancel
                 </button>
-                <button type="submit" onClick={onConfirm} className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300">
+                <button type="submit" onClick={onConfirmClick} className="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300">
                     Yes, I'm sure
                 </button>
             </div>
