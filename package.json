@@ -48,6 +48,7 @@
     "@tremor/react": "^3.6.6",
     "aedes": "^0.50.0",
     "aedes-stats": "^4.0.0",
+    "amqplib": "^0.10.3",
     "axios": "^1.5.1",
     "bcryptjs": "^2.4.3",
     "bee-queue": "^1.5.0",

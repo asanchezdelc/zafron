@@ -11,8 +11,9 @@ A rudimentary and simple dashboard for devices such as Arduinos, ESP family, Ras
 
 ## Requirements
 - NodeJS
-- MongoDB
-- Redis
+- MongoDB `docker run -d -p 27017:27017 mongo`
+- Redis `docker run -d -p 6379:6379 redis`
+- RabbitMQ (optional) `docker run -d -p 5672:5672 rabbitmq`
 - npm
 
 ## Migrate Cayenne Projects
