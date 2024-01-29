@@ -1,10 +1,10 @@
 # Zafron
 
-A rudimentary and simple dashboard for devices such as Arduinos, ESP family, RaspberryPi, and more. This project was brought up to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. 
+A rudimentary and simple dashboard for devices such as Arduinos, ESP family, Raspberry Pi, and more. This project was brought to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. 
 
 [Documentation](https://zafron.dev/docs)
 
-**Work in progress.**
+Get started quickly using [Zafron Cloud](https://zafron.dev)
 
 <img src="https://github.com/asanchezdelc/zafron/blob/main/docs/lander.png?raw=true" alt="Lander" width="500"/>
 <img src="https://github.com/asanchezdelc/zafron/blob/main/docs/logs.png?raw=true" alt="Logs" width="500"/>
