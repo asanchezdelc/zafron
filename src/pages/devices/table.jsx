@@ -6,6 +6,7 @@ import {
   TableBody,
   TableCell,
   Badge,
+  Button,
 } from '@tremor/react';
 
 import { Link } from "react-router-dom";
@@ -14,7 +15,7 @@ import { toFriendlyTime } from '../../services/utils';
 export default function DevicesTable({ devices, onDelete }) {
   return (
     <Table>
-      <TableHead>
+      <TableHead className='bg-gray-50'>
         <TableRow>
           <TableHeaderCell>Serial</TableHeaderCell>
           <TableHeaderCell>Name</TableHeaderCell>
@@ -38,10 +39,7 @@ export default function DevicesTable({ devices, onDelete }) {
             </TableCell>
             {/* <TableCell>
               <Button size='xs' className="mr-5" variant='secondary'>
-                <CogIcon className="h-5 w-5 text-blue-500"/>
-              </Button>
-              <Button size='xs' onClick={() => onDelete(device._id)} variant='secondary' className='border-red-500'>
-                <TrashIcon className="h-5 w-5 text-red-500"/>
+                <Cog6ToothIcon className="h-5 w-5 text-blue-500"/>
               </Button>
             </TableCell> */}
           </TableRow>
