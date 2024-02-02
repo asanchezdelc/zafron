@@ -45,7 +45,7 @@
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@hookform/resolvers": "^3.3.3",
-    "@tremor/react": "^3.6.6",
+    "@tremor/react": "^3.13.4",
     "aedes": "^0.50.0",
     "aedes-stats": "^4.0.0",
     "amqplib": "^0.10.3",

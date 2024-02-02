@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Title, Flex, Button, TextInput, Select, SelectItem } from '@tremor/react';
+import { Flex, Button, TextInput, Select, SelectItem, Switch, Text } from '@tremor/react';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 import Alert from '../../../components/alert';
-import PlusIcon from '../../../components/icons/PlusIcon';
 
 export default function RuleForm({ capabilities, onCancel, onAction, rule, formMode='create' }) {
   const [name, setName] = useState('');
@@ -17,6 +16,7 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
   const [errors, setErrors] = useState({});
   const [title, setTitle] = useState('Add Rule');
   const [action, setAction] = useState('Add Rule');
+  const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     // If in "edit" mode and a rule is provided, populate the form fields
@@ -28,6 +28,7 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
       setCondition(rule.condition.operator || '');
       setValue(rule.condition.value || 0);
       setActionType(rule.action.type || 'email');
+      setEnabled(rule.enabled || false);
       if (rule.action.type === 'webhook') setWebhook(rule.action.value || '');
       if (rule.action.type === 'email')       setEmail(rule.action.value || '');
     }
@@ -59,10 +60,15 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
       value,
       actionType,
       webhook,
-      email
+      email,
+      enabled
     }
     
     onAction(rule, formMode);
+  }
+  
+  const handleEnableChange = (value) => {
+    setEnabled(value);
   }
 
   useEffect(() => {
@@ -150,12 +156,22 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
         
       </form>
       <Flex className='border-t'>
-        <Button
-          className="mt-2 bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
+        <div>
+          <Flex justifyContent="end" className="space-x-2">
+          <Button
+            className="mt-2 bg-white border-gray-200 text-gray-500 hover:bg-gray-50 hover:border-gray-300"
+            onClick={onCancel}
+          >
+            Cancel
+          </Button>
+          <div className="flex items-center space-x-3 mt-2">
+            <Switch id="switch" name="switch" checked={enabled} onChange={handleEnableChange} />
+            <label className="text-sm text-gray-500">
+              { enabled ? 'Enabled' : (<Text color="red">Disabled</Text>)}
+            </label>
+          </div>
+        </Flex>
+        </div>
         <button
           className="mt-2 flex items-center justify-center text-white bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
           onClick={onSubmit}

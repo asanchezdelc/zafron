@@ -17,9 +17,10 @@ export default function RulesPage({device}) {
     try {
       let newRule;
       if (mode === 'edit') {
+
         newRule = await rulesAPI.update(rule._id, { ...ruleData, deviceId: device._id, serial: device.serial });
         const newRules = rules.map(r => {
-          if (r._id === ruleData._id) {
+          if (r._id === rule._id) {
             return newRule;
           }
           return r;
