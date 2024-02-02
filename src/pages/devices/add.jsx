@@ -42,7 +42,7 @@ export default function AddDevice({onCancel, onAction}) {
             </div>
         
           <form className='p-10'>
-          <div className="mb-6">
+          <div className="mb-6 w-72">
             <label className="block mb-2 text-sm font-medium text-gray-900">Name</label>
             <TextInput value={name} onChange={(e) => setName(e.target.value)} placeholder="Device Name" />
           </div>

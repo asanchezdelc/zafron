@@ -3,7 +3,7 @@ import { Card, Title, Button, Flex, Text, Divider } from '@tremor/react';
 import DevicesTable from './table';
 import Nav from '../../components/nav';
 import * as devicesAPI from '../../services/device';
-import AddDivice from './add';
+import AddDevice from './add';
 import Alert from '../../components/alert';
 
 export default function Devices() {
@@ -63,7 +63,7 @@ export default function Devices() {
             <Button variant="primary" size='xs' onClick={initDeviceForm}>Add Device</Button>
           </div> )}          
         </Card>
-        {isOpen && ( <AddDivice onCancel={setIsOpen} onAction={onAddDevice} />
+        {isOpen && ( <AddDevice onCancel={setIsOpen} onAction={onAddDevice} />
   
         )}
     </main>
