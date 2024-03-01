@@ -7,7 +7,6 @@ import { Title, TabGroup,
   TabPanels,
   Icon,
   Button,
-  Card
 } from '@tremor/react';
 import Nav from '../../components/nav';
 import * as devicesAPI from '../../services/device';

@@ -27,7 +27,7 @@ export default function DevicesTable({ devices, onDelete }) {
         {devices.map((device) => (
           <TableRow key={device._id}>
             <TableCell>
-              <Link to={`/devices/${device._id}`}>
+              <Link to={`/devices/${device._id}`} className="inline-flex items-center gap-1 text-tremor-brand hover:underline hover:underline-offset-4">
                 {device.serial}
               </Link>
             </TableCell>
