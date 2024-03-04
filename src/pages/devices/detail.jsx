@@ -164,7 +164,6 @@ export default function DeviceDetail() {
             const packet = new MQTTPacket({ topic, payload: message });
             
             if (device.serial === packet.getSerial()) {
-              console.log('device message received', packet.getSerial(), topic, packet.getCaps());
               setStatus(new Date().getTime());
               const currentCapabilities = capabilitiesRef.current;
               const newCapabilities = [];
@@ -206,7 +205,6 @@ export default function DeviceDetail() {
   }
 
   const onSwitchToggle = async (capability) => {
-    console.log('switch toggled', capability)
     // value
     const topic = `v1/${mqttClient.options.username}/things/${device.serial}/cmd/${capability.channel}`;
     const seq = Math.floor(Math.random() * 1000000);

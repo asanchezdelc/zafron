@@ -1,22 +1,54 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Button, TextInput, Select, SelectItem, Flex } from '@tremor/react';
 import { generateDeviceName, generateSerial } from '../../services/magicwords';
+import * as profileAPI from '../../services/profiles';
 
 export default function AddDevice({onCancel, onAction}) {
   let [isOpen, setIsOpen] = useState(true)
   let [type, setType] = useState('mqtt')
+  const [profile, setProfile] = useState('')
   let [serial, setSerial] = useState(generateSerial())
   let [name, setName] = useState(generateDeviceName())
-
+  const [profiles, setProfiles] = useState([{}])
   const onAddDevice = async (e) => {
     e.preventDefault();
     try {
-      onAction({ name, type, serial });
+      onAction({ name, type, serial, profile });
     } catch (err) {
       console.error("Error adding device:", err);
     }
   }
+
+  const getSources = async () => {
+    try {
+      const response = await profileAPI.list(0, 10);
+      setProfiles(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const validateSerial = (serial) => {
+    if (serial.length < 6) {
+      return false;
+    }
+
+    serial = serial.toUpperCase();
+    serial = serial.replace(/[^A-Z0-9]/g, '');
+    serial = serial.trim();
+
+    setSerial(serial);
+
+    console.log(serial);
+
+    return true;
+  }
+
+  useEffect(() => {
+    getSources();
+  }, []);
+
   return (
     /* Use `initialFocus` to force initial focus to a specific ref. */
     <Dialog
@@ -48,15 +80,26 @@ export default function AddDevice({onCancel, onAction}) {
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">Serial</label>
-            <TextInput value={serial} onChange={(e) => setSerial(e.target.value)} placeholder="Device Serial" disabled={true} />
+            <TextInput value={serial} onChange={(e) => validateSerial(e.target.value)} placeholder="Device Serial" />
           </div>
           <div className="mb-6">
             <label className="block mb-2 text-sm font-medium text-gray-900">Type</label>
             <Select value={type} onValueChange={setType} defaultValue='mqtt'>
               <SelectItem value="mqtt">MQTT</SelectItem>
-              {/* <SelectItem value="lora">LoRaWAN</SelectItem> */}
+              <SelectItem value="lora">LoRaWAN</SelectItem>
+              <SelectItem value="http">HTTP</SelectItem>
             </Select>
-            </div>
+          </div>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm font-medium text-gray-900">Source</label>
+            { (type === 'http' || type === 'lora') &&  (
+            <Select value={profile} onValueChange={setProfile}>
+              { profiles.map((profile) => (
+                <SelectItem value={profile._id}>{profile.name}</SelectItem>
+              ))}
+            </Select>)
+            }
+          </div>
             <Flex justifyContent="end" className="space-x-2 border-t pt-4 mt-8">
               <Button variant="secondary" size='xs' onClick={() => onCancel(false)}>Cancel</Button>
               <Button variant="primary" size='xs' onClick={onAddDevice} className='mr-6'>Add Device</Button>

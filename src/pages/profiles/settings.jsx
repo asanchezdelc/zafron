@@ -53,7 +53,7 @@ export default function ProfileSettings() {
           </TabList>
           <TabPanels>
             <TabPanel>
-              <Decoder profileId={profileId} />
+              <Decoder profileId={profileId} profile={profile} />
             </TabPanel>
             <TabPanel>
               <Config />

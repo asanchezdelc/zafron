@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import { profileSchema } from './schema';
 
 export default function ProfileForm({ onCancel, profile }) {
-  const [action, setAction] = useState('Create');
   const [disabled, setDisabled] = useState(false);
   const [sources, setSources] = useState([]);
 
