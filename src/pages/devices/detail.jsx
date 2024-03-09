@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Title, TabGroup, 
   Flex, Text, Tab, 
   TabList, TabPanel, Grid,
@@ -222,7 +222,8 @@ export default function DeviceDetail() {
             <div>
               <Title>{name}</Title>
               <Text>
-                {device.serial}
+                {device.serial} {' '}
+                {device.profile && (<Link to={`/profiles/${device.profile._id}/settings`} className="text-blue-600">{`(${device.profile.name})`}</Link>)}
               </Text>
               {/* <CoffeeCup /> */}
             </div>
