@@ -29,18 +29,25 @@ export default function Decoder({ profile }) {
   }
 
   const onTestClick = async () => {
+    setError(null);
+    setOutput('');
+    
     if (!payload) {
       console.log('Payload is required');
       return;
     }
 
     try {
-      const resp = await profilesAPI.decode(profile.id, { payload });
-      setOutput(JSON.stringify(resp));
+      const resp = await profilesAPI.decode(profile._id, { payload });
+      if (resp.errors && resp.errors.length > 0) {
+        setError(JSON.stringify(resp.errors, null, 5));
+        return;
+      }
+      setOutput(JSON.stringify(resp.decoded, null, 2));
       setPayload('');
     } catch (err) {
       console.log(err);
-      setError(err);
+      // setError(err);
     }
   }
 
@@ -123,9 +130,9 @@ export default function Decoder({ profile }) {
                 </div>
                 <div>
                   <h4 className="mb-1">Output</h4>
-                  { error && <p className="text-red-500">{error}</p> }
-                  <div className="bg-gray-100 p-2 border-1 border-gray-200 border-r">
-                    { output && <code>{output}</code> }
+                  { error && <div className="bg-red-100 px-1"><pre className="text-red-500">{error}</pre></div> }
+                  <div className="bg-green-100 p-2 border-1 border-gray-200 border-r">
+                    { output && <pre>{output}</pre> }
                   </div>
                 </div>
               </div>
