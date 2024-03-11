@@ -90,33 +90,88 @@ export default function Decoder({ profile }) {
                 </div>
               </div>
               <div>
-                <Title>Help</Title>
+                <Title className="mb-4">Documentation</Title>
                 <AccordionList>
                   <Accordion>
-                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">Accordion 1</AccordionHeader>
+                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">Example 1</AccordionHeader>
                     <AccordionBody className="leading-6">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-                      tempor lorem non est congue blandit. Praesent non lorem sodales,
-                      suscipit est sed, hendrerit dolor.
+                      <pre>
+                      {`
+      function decode(payload) {
+        return [
+        { 
+            channel: "100", 
+            type: "temp", 
+            value: 21.1, 
+            unit: "c" 
+          },
+          { 
+            channel: "200", 
+            type: "hum", 
+            value: 80, 
+            unit: "p" 
+          }
+        ];
+      }
+                      `}
+                      </pre>
                     </AccordionBody>
                   </Accordion>
                   <Accordion>
-                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">Accordion 2</AccordionHeader>
+                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">Example 2</AccordionHeader>
                     <AccordionBody className="leading-6">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-                      tempor lorem non est congue blandit. Praesent non lorem sodales,
-                      suscipit est sed, hendrerit dolor.
+                      <pre>
+                      {`
+      function decode(buffer) {
+        var sensors = [];
+        var i = 0, channel, typeByte, type, unit, size, resolution, precision, data, name;
+        while (i < buffer.length) {
+            channel = buffer.readUInt8(i++);
+            typeByte = buffer.readUInt8(i++);
+    
+            type = 'digital_input';
+            unit = 'd';
+            size = 0;
+            resolution = 0;
+            precision = 0;
+            data = undefined;
+            name = undefined;
+    
+            switch (typeByte) {
+                case 'digital_input':
+                    type = 'digital_input';
+                    unit = 'd';
+                    size = 1;
+                    resolution = 1; // Unsigned
+                    precision = 0;
+                    data = buffer.readUInt8(i);
+                    name = "Digital Input";
+                    break;
+            }
+
+            if (data !== undefined) {
+              var value = new Number((data * resolution).toFixed(precision));
+              sensors.push({
+                  channel: channel,
+                  type: type,
+                  unit: unit,
+                  value: value,
+                  name: name ? name + " (" + channel + ")" : undefined
+              });
+            }
+          }
+          return sensors;
+        }
+                      `}</pre>
                     </AccordionBody>
                   </Accordion>
                   <Accordion>
-                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">Accordion 3</AccordionHeader>
+                    <AccordionHeader className="text-sm font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">More Decoders</AccordionHeader>
                     <AccordionBody className="leading-6">
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-                      tempor lorem non est congue blandit. Praesent non lorem sodales,
-                      suscipit est sed, hendrerit dolor.
+                      <a href="https://github.com/TheThingsNetwork/lorawan-devices" target="_blank">LoRaWAN Devices Repo</a>
                     </AccordionBody>
                   </Accordion>
-                  </AccordionList>
+                </AccordionList>
               </div>
             </div>
             <Divider />
@@ -129,11 +184,12 @@ export default function Decoder({ profile }) {
                   <Button variant="secondary" size='xs' onClick={onTestClick}>Test</Button>
                 </div>
                 <div>
-                  <h4 className="mb-1">Output</h4>
+                  <h4 className="mb-1">Test Output</h4>
                   { error && <div className="bg-red-100 px-1"><pre className="text-red-500">{error}</pre></div> }
-                  <div className="bg-green-100 p-2 border-1 border-gray-200 border-r">
-                    { output && <pre>{output}</pre> }
-                  </div>
+                  { output && <div className="bg-green-100 p-2 border-1 border-gray-200 border-r">
+                    <pre>{output}</pre> 
+                  </div>}
+                  
                 </div>
               </div>
               

@@ -22,6 +22,10 @@ export const updateCode = (id, code) => {
   return request(`${baseURL}/${id}`, { method: 'PATCH', json: { decoder: code } });
 }
 
+export const update = (id, data) => {
+  return request(`${baseURL}/${id}`, { method: 'PATCH', json: data });
+}
+
 export const decode = (id, data) => {
   return request(`${baseURL}/${id}/decode`, { method: 'POST', json: data });
 }

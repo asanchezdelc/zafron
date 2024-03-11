@@ -15,7 +15,6 @@ import Config from './config';
 export default function ProfileSettings() {
   const { profileId } = useParams();
   const [profile, setProfile] = useState({});
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getDevice = async () => {
@@ -56,7 +55,7 @@ export default function ProfileSettings() {
               <Decoder profileId={profileId} profile={profile} />
             </TabPanel>
             <TabPanel>
-              <Config />
+              <Config profile={profile} />
             </TabPanel>
           </TabPanels>
         </TabGroup>
