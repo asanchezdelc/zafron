@@ -6,6 +6,8 @@ import { useAuth } from '../services/AuthProvider';
 
 const navigation = [
   { name: 'Devices', href: '/devices' },
+  { name: 'Profiles', href: '/profiles' },
+  { name: 'Sources', href: '/sources' },
   { name: 'Documentation', href: 'https://zafron.dev/docs/intro', external: true },
   // { name: 'Dashboards', href: '/dashboards' }
 ];
