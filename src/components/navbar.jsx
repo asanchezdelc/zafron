@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, UserCircleIcon, BellAlertIcon } from '@heroicons/react/24/outline';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../services/AuthProvider';
 
@@ -77,8 +77,14 @@ export default function Navbar({ user }) {
                 </div>
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:items-center">
+                <div>
+                  <a data-canny-link href="https://zafron.canny.io/changelog" target='_blank' rel='noopener noreferrer'>
+                    <BellAlertIcon className='text-blue-500 w-7 h-7 mr-3'/>
+                    </a>
+                </div>
                 <Menu as="div" className="relative ml-3">
                   <div>
+
                     <Menu.Button className="flex rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2">
                       <span className="sr-only">Open user menu</span>
                       <UserCircleIcon className='text-gray-400 w-10 h-10'/>
