@@ -13,3 +13,7 @@ export const create = (data) => {
 export const remove = (id) => {
   return request(`${baseURL}/${id}`, { method: 'DELETE' });
 }
+
+export const findOne = (id) => {
+  return request(`${baseURL}/${id}`);
+}

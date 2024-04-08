@@ -1,7 +1,12 @@
+import React, { useEffect } from 'react';
 import Credentials from '../credentials';
 import { Title, Subtitle, 
   Card, Text, List, ListItem, Bold
 } from '@tremor/react';
+// get sourceAPI
+import * as sourceAPI from '../../../services/sources';
+import { Link } from 'react-router-dom';
+import CopyToClip from '../../../components/copy';
 
 const links = [
   {
@@ -23,12 +28,50 @@ const links = [
 ]
 
 const LoraHero = ({ profile }) => {
+  const [source, setSource] = React.useState('');
+
+  const getSource = async () => {
+    const s = await sourceAPI.findOne(profile.source);
+    setSource(s);
+    console.log(s);
+  }
+
+  useEffect(() => {
+    console.log(profile);
+    getSource();
+  }, [profile.source]);
+
   return (
     <div className="lora">
-      <Text>Data will be auto populate as soon as is sent from the network server. If data is not rendered, verify your source and profile.</Text>
-      <ul>
-        <li><Bold>Name:</Bold> {profile.name}</li>
-      </ul>
+      <div class="lora-container">
+        <h2 class="text-2xl font-bold mb-2 text-gray-800">Configuring Your LoRa Device</h2>
+        <p class="mb-4">You've successfully added your LoRa device. To start sending data and utilize our services, please follow these steps:</p>
+        
+        <div class="mb-4">
+          <h3 class="text-xl font-bold text-gray-700">Step 1: Configure Your {source.provider} LoRa Network Server</h3>
+          <p>Set up your LoRa device to communicate with our Zafron:</p>
+          <ol class="list-decimal ml-8 mb-4">
+            <li>Log in to your <Link to={`/sources/${source._id}`} className="text-blue-600">{source.provider}</Link> network server's console.</li>
+            <li>Navigate to the routing or forwarding settings.</li>
+            <li>Add a new rule to redirect device traffic to Zafron.</li>
+            <li>Enter the URL we provide:</li>
+          </ol>
+          <div className="bg-gray-200 border-rounded px-2"><CopyToClip text={`https://app.zafron.dev/api/ingress/${source.maskId}?apiKey=${source.apiKey}`}></CopyToClip></div>
+
+        </div>
+        
+        <div class="mb-4">
+          <h3 class="text-xl font-bold text-gray-700">Step 2: Update Decoder Function</h3>
+          <p>Decode the payload from your LoRa device:</p>
+          <ol class="list-decimal ml-8">
+            <li>In the <Link to={`/profiles/${profile._id}`} className="text-blue-600">{profile.name}</Link>, find the 'Decoder' section.</li>
+            <li>Define or upload your decoder function.</li>
+          </ol>
+          
+        </div>
+        
+        <p>If you have questions or need assistance during setup, please reach out to our support team.</p>
+      </div>
     </div>
   )
 }

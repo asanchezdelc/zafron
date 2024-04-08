@@ -1,0 +1,4 @@
+.url-wrapper {
+  word-break: break-all; /* This will break the text at any character to prevent overflow */
+  overflow-wrap: break-word; /* This is for breaking at appropriate points, like spaces */
+}

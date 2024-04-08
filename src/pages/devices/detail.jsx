@@ -231,7 +231,7 @@ export default function DeviceDetail() {
           <div className='text-right w-1/2'>
           {isOnline ? <Badge color='green' icon={WifiIcon}>Online</Badge> : 
             <Badge color='rose'>Offline</Badge>}
-            <Text className='mt-2 text-xs'>Last Update: {toFriendlyTime(uplink)}</Text>
+            <Text className='mt-2 text-xs'>Last Seen: {toFriendlyTime(uplink)}</Text>
           </div>
         </Flex>
         <TabGroup className="mt-6" onIndexChange={onTabChange}>

@@ -19,7 +19,8 @@ export default function DevicesTable({ devices, onDelete }) {
         <TableRow>
           <TableHeaderCell>Serial</TableHeaderCell>
           <TableHeaderCell>Name</TableHeaderCell>
-          <TableHeaderCell>Last Online</TableHeaderCell>
+          <TableHeaderCell>Type</TableHeaderCell>
+          <TableHeaderCell>Last Seen</TableHeaderCell>
           {/* <TableHeaderCell></TableHeaderCell> */}
         </TableRow>
       </TableHead>
@@ -33,6 +34,9 @@ export default function DevicesTable({ devices, onDelete }) {
             </TableCell>
             <TableCell>
               <Link to={`/devices/${device._id}`}>{device.name}</Link>
+            </TableCell>
+            <TableCell>
+              { device.type ? device.type : 'mqtt' }
             </TableCell>
             <TableCell>
               { (device.lastOnline) ? toFriendlyTime(device.lastOnline): <Badge size="xs">Never Seen</Badge> }
