@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Text, Flex, Badge } from '@tremor/react';
 
-export default function Toggle({ onToggle, value, disabled }) {
+export default function Toggle({ onToggle, value }) {
   const [isOn, setIsOn] = useState(false);
 
   useEffect(() => {
-    setIsOn(value);
+    const rawValue = value || false;
+    // value sometimes can be 0/1 string or number, lets normalize it
+    if (rawValue === '1')
+      setIsOn(true)
+    else if (rawValue === '0')
+      setIsOn(false)
+    else
+    setIsOn(value || false);
   }, [value]);
 
   const handleChange = () => {

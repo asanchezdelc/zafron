@@ -60,7 +60,7 @@ export default function MetricCard({ deviceId, capability, onAddCapability, onEd
         )}
         {capability.new && (<Button variant="light" onClick={() => onAddCapability(capability)} size="sm" className="ml-2 border-1" icon={PlusCircleIcon}>Add</Button>)}
       </Flex>
-      <Flex className="" justifyContent="between" alignItems="baseline">
+      <Flex justifyContent="between" alignItems="baseline">
         <div>
           <Flex className="space-x-3 truncate" justifyContent="start" alignItems="baseline">
             <Metric>{capability.value}</Metric>
