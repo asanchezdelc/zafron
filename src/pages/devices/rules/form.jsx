@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Flex, Button, TextInput, Select, SelectItem, Switch, Text } from '@tremor/react';
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import * as DeviceAPI from '../../../services/device';
 
 import Alert from '../../../components/alert';
 
-export default function RuleForm({ capabilities, onCancel, onAction, rule, formMode='create' }) {
+export default function RuleForm({ deviceId, onCancel, onAction, rule, formMode='create' }) {
   const [name, setName] = useState('');
   const [capability, setCapability] = useState('');
   const [condition, setCondition] = useState('');
@@ -17,6 +18,7 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
   const [title, setTitle] = useState('Add Rule');
   const [action, setAction] = useState('Add Rule');
   const [enabled, setEnabled] = useState(false);
+  const [capabilities, setCapabilities] = useState(undefined);
 
   useEffect(() => {
     // If in "edit" mode and a rule is provided, populate the form fields
@@ -72,11 +74,12 @@ export default function RuleForm({ capabilities, onCancel, onAction, rule, formM
   }
 
   useEffect(() => {
-    if (capabilities === undefined) {
-      setDisabled(true);
-      return;
-    }
-  }, [capabilities]);
+    if (deviceId === undefined) return;
+    DeviceAPI.getCapabilities(deviceId).then((data) => {
+      setCapabilities(data.capabilities);
+    });
+    
+  }, [deviceId]);
 
   return (
     <div className="relative">

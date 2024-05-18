@@ -121,7 +121,7 @@ export default function RulesPage({device}) {
                     className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
                                       p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
                   >
-                    <RuleForm capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} formMode={formMode} rule={rule} />
+                    <RuleForm deviceId={device._id} onCancel={closeModal} onAction={onCreate} formMode={formMode} rule={rule} />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

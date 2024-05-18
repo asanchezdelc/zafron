@@ -26,6 +26,10 @@ export const patchCapability = (deviceId, capability) => {
   });
 };
 
+export const getCapabilities = (deviceId) => {
+  return request(`${baseURL}/${deviceId}/capabilities`);
+}
+
 export const patchDevice = (deviceId, payload) => {
   return request(`${baseURL}/${deviceId}`, {
       method: 'PATCH',
