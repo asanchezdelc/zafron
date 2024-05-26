@@ -11,7 +11,9 @@ import {
   TabList,
   TabPanels,
   TabPanel,
-  Title
+  Title,
+  Select,
+  SelectItem,
  } from '@tremor/react';
   import CodeEditor from '@uiw/react-textarea-code-editor';
   import rehypePrism from '@mapbox/rehype-prism';
@@ -20,17 +22,30 @@ import {
 import DecoderHelp from './help';
 import Spinner from '../../components/spinner';
 
+const decoders = [
+  { type: 'cayennelpp', name: 'CayenneLPP' },
+  { type: 'custom', name: 'Custom' },
+];
+
 export default function Decoder({ profile }) {
   const [code, setCode] = useState('');
   const [payload, setPayload] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState('');
+  const [decoderType, setDecoderType] = useState('cayennelpp');
+  const [saveLoading, setSaveLoading] = useState(false);
 
   const onUpdateCode = async () => {
     setLoading(true);
     await profilesAPI.updateCode(profile._id, code);
     setLoading(false);
+  }
+
+  const onDecoderTypePick = async () => {
+    setSaveLoading(true);
+    await profilesAPI.update(profile._id, { decoder_type: decoderType });
+    setSaveLoading(false);
   }
 
   const onTestClick = async () => {
@@ -57,21 +72,45 @@ export default function Decoder({ profile }) {
   }
 
   useEffect(() => {
-    setCode(profile.decoder);
+    setDecoderType(profile.decoder_type || 'cayennelpp');
+    setCode(profile.decoder || '');
   }, [profile]);
 
   return (
     <div>
       <Card>
-        <Flex>
           <div className="mb-2 mt-2">
             <div className="gap-4">
               <div className="m-2">
-                <Text>
-                  Decoder function is used to decode incoming device payload into a normalized structure. 
+                <div className="decoder-picker">
+                  <label 
+                  className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                    Pick a decoder or build your own
+                  </label>
+                  <p className="mt-1 text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+                
+                  </p>
+                  <div className="mt-2">
+                    <Flex>
+                      <Select value={decoderType} onValueChange={setDecoderType}>
+                        {decoders.map((d) => <SelectItem key={d.type} value={d.type}>{d.name}</SelectItem>)}
+                      </Select>
+                      <div className='ml-3'>
+                        <Button variant="primary" size='md' loading={saveLoading} onClick={onDecoderTypePick}>
+                          <span>Save</span>
+                        </Button>
+                      </div>
+                    </Flex>
+                  </div>
+                </div>
+                <Divider className='mb-2'/>
+              </div> { /* outergap */}
+              { decoderType === 'custom' && 
+                <div className='decoder mt-3 mb-2'>
+                  <Text className='mb-2'>
+                    Decoder function is used to decode incoming device payload into a normalized structure. 
                     In the case of LoRaWAN, here hex/base64 strings are decoded to Zafron's JSON Schema. 
-                </Text>
-                <div className='mt-3 mb-2'>
+                  </Text>
                   <TabGroup>
                     <TabList variant="solid" defaultValue="1">
                       <Tab value="1">Editor</Tab>
@@ -84,8 +123,7 @@ export default function Decoder({ profile }) {
                       <div className='mb-2'>
                         <Flex justifyContent="between">
                           <Title>Editor</Title>
-                          <Button variant="primary" size='xs' onClick={onUpdateCode}>Save</Button>
-                          { loading && <Spinner /> }
+                          <Button variant="secondary" size='xs' onClick={onUpdateCode} loading={loading}>Update</Button>
                         </Flex>
                       </div>
                         <CodeEditor
@@ -134,17 +172,9 @@ export default function Decoder({ profile }) {
                       </TabPanel>
                     </TabPanels>
                   </TabGroup>
-                  </div>
-
-                
-              </div>
-              {/* */}
+                </div> }
             </div>
-            
-           
           </div>
-          
-        </Flex>
       </Card>
     </div>
   )

@@ -49,7 +49,7 @@ const LoraHero = ({ profile }) => {
         
         <div class="mb-4">
           <h3 class="text-xl font-bold text-gray-700">Step 1: Configure Your {source.provider} LoRa Network Server</h3>
-          <p>Set up your LoRa device to communicate with our Zafron:</p>
+          <p>Set up your LoRa device to communicate with Zafron:</p>
           <ol class="list-decimal ml-8 mb-4">
             <li>Log in to your <Link to={`/sources/${source._id}`} className="text-blue-600">{source.provider}</Link> network server's console.</li>
             <li>Navigate to the routing or forwarding settings.</li>
@@ -64,7 +64,7 @@ const LoraHero = ({ profile }) => {
           <h3 class="text-xl font-bold text-gray-700">Step 2: Update Decoder Function</h3>
           <p>Decode the payload from your LoRa device:</p>
           <ol class="list-decimal ml-8">
-            <li>In the <Link to={`/profiles/${profile._id}`} className="text-blue-600">{profile.name}</Link>, find the 'Decoder' section.</li>
+            <li>In the <Link to={`/profiles/${profile._id}/settings`} className="text-blue-600">{profile.name}</Link>, find the 'Decoder' section.</li>
             <li>Define or upload your decoder function.</li>
           </ol>
           
