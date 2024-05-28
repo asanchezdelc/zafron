@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { z } from "zod";
-import { Flex, Button, Title, TextInput, Text } from '@tremor/react';
+import { Flex, Button, Title, TextInput, Text, Select, SelectItem } from '@tremor/react';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,31 +26,39 @@ const providers = [
 ];
 
 export default function SourceForm({ onCancel, source }) {
-  //const [name, setName] = useState(source?.name || '');
-  //const [provider, setProvider] = useState(source?.provider || 'chirpstackv3');
-  const [action, setAction] = useState('Create');
-  const [disabled, setDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState(source?.provider || '');
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
   } = useForm({
     resolver: zodResolver(sourceSchema),
   });
 
   const onSubmitEvent = async (data) => {
     try {
-      setDisabled(true);
+      setLoading(true);
       await sourceAPI.create(data);
       reset({ name: '', provider: '' });
       onCancel();
-      setDisabled(false);
+      setLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handleProviderChange = (value) => {
+    setSelectedProvider(value);
+    setValue('provider', value); // manually set the value in react-hook-form
+  };
+
+  useEffect(() => {
+    register('provider'); // register provider field manually
+  }, [register]);
 
   return (
     <div>
@@ -79,16 +87,18 @@ export default function SourceForm({ onCancel, source }) {
           </div>
           <div className="form-group mb-6">
             <label htmlFor="provider" className="block text-sm font-bold text-gray-700 mb-2">Provider <span className='text-red-700'>*</span></label>
-            <select 
+            <Select 
+              error={errors.provider} 
+              errorMessage={errors.provider?.message}
               name="provider"
-              className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5'
-              {...register('provider')}>
+              value={selectedProvider}
+              onValueChange={handleProviderChange}>
               { providers.map((provider) => (
-                <option key={provider.id} value={provider.value}>
+                <SelectItem key={provider.id} value={provider.value}>
                   {provider.name}
-                </option>
+                </SelectItem>
               ))}
-            </select>
+            </Select>
             <Text className='mt-2'> Don't see a provider? Create a topic 
         on 
          <a href="https://github.com/asanchezdelc/zafron/discussions"> Github</a> or <a href="mailto:hello@zafron.dev">email us.</a></Text>
@@ -98,8 +108,7 @@ export default function SourceForm({ onCancel, source }) {
           </div>
           <div className="footer mt-10">
             <Flex justifyContent="center" >
-              <Button variant="primary" type="submit" className='w-full'
-                  disabled={disabled}>Create Source</Button>
+              <Button variant="primary" type="submit" className='w-full' loading={loading}>Create Source</Button>
             </Flex>
           </div>
         </form>

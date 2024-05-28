@@ -11,14 +11,22 @@ import {
   TabList,
   TabPanels,
   TabPanel,
-  Title
+  Title,
+  Select,
+  SelectItem,
+  NumberInput,
+  Switch,
  } from '@tremor/react';
   import CodeEditor from '@uiw/react-textarea-code-editor';
   import rehypePrism from '@mapbox/rehype-prism';
   import * as profilesAPI from '../../services/profiles';
 
 import DecoderHelp from './help';
-import Spinner from '../../components/spinner';
+
+const decoders = [
+  { type: 'cayennelpp', name: 'CayenneLPP' },
+  { type: 'custom', name: 'Custom' },
+];
 
 export default function Decoder({ profile }) {
   const [code, setCode] = useState('');
@@ -26,6 +34,10 @@ export default function Decoder({ profile }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState('');
+  const [decoderType, setDecoderType] = useState('cayennelpp');
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [fPort, setFPort] = useState(1);
+  const [isHexString, setIsHexString] = useState(false);
 
   const onUpdateCode = async () => {
     setLoading(true);
@@ -33,17 +45,24 @@ export default function Decoder({ profile }) {
     setLoading(false);
   }
 
+  const onDecoderTypePick = async () => {
+    setSaveLoading(true);
+    await profilesAPI.update(profile._id, { decoder_type: decoderType });
+    setSaveLoading(false);
+  }
+
   const onTestClick = async () => {
     setError(null);
     setOutput('');
     
+    console.log(payload);
     if (!payload) {
       console.log('Payload is required');
       return;
     }
 
     try {
-      const resp = await profilesAPI.decode(profile._id, { payload });
+      const resp = await profilesAPI.decode(profile._id, { payload: payload, fPort: fPort});
       if (resp.errors && resp.errors.length > 0) {
         setError(JSON.stringify(resp.errors, null, 5));
         return;
@@ -57,21 +76,45 @@ export default function Decoder({ profile }) {
   }
 
   useEffect(() => {
-    setCode(profile.decoder);
+    setDecoderType(profile.decoder_type || 'cayennelpp');
+    setCode(profile.decoder || '');
   }, [profile]);
 
   return (
     <div>
       <Card>
-        <Flex>
           <div className="mb-2 mt-2">
             <div className="gap-4">
               <div className="m-2">
-                <Text>
-                  Decoder function is used to decode incoming device payload into a normalized structure. 
+                <div className="decoder-picker">
+                  <label 
+                  className="text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+                    Pick a decoder or build your own
+                  </label>
+                  <p className="mt-1 text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+                
+                  </p>
+                  <div className="mt-2">
+                    <Flex>
+                      <Select value={decoderType} onValueChange={setDecoderType}>
+                        {decoders.map((d) => <SelectItem key={d.type} value={d.type}>{d.name}</SelectItem>)}
+                      </Select>
+                      <div className='ml-3'>
+                        <Button variant="primary" size='md' loading={saveLoading} onClick={onDecoderTypePick}>
+                          <span>Save</span>
+                        </Button>
+                      </div>
+                    </Flex>
+                  </div>
+                </div>
+                <Divider className='mb-2'/>
+              </div> { /* outergap */}
+              { decoderType === 'custom' && 
+                <div className='decoder mt-3 mb-2'>
+                  <Text className='mb-2'>
+                    Decoder function is used to decode incoming device payload into a normalized structure. 
                     In the case of LoRaWAN, here hex/base64 strings are decoded to Zafron's JSON Schema. 
-                </Text>
-                <div className='mt-3 mb-2'>
+                  </Text>
                   <TabGroup>
                     <TabList variant="solid" defaultValue="1">
                       <Tab value="1">Editor</Tab>
@@ -84,8 +127,7 @@ export default function Decoder({ profile }) {
                       <div className='mb-2'>
                         <Flex justifyContent="between">
                           <Title>Editor</Title>
-                          <Button variant="primary" size='xs' onClick={onUpdateCode}>Save</Button>
-                          { loading && <Spinner /> }
+                          <Button variant="secondary" size='xs' onClick={onUpdateCode} loading={loading}>Update</Button>
                         </Flex>
                       </div>
                         <CodeEditor
@@ -94,12 +136,10 @@ export default function Decoder({ profile }) {
                           placeholder="Please enter JS code."
                           onChange={(evn) => setCode(evn.target.value)}
                           padding={15}
-                          minHeight={8}
                           rehypePlugins={[
                             [rehypePrism, { ignoreMissing: true }],
                           ]}
                           style={{
-                            height: 600,
                             overflow: 'auto',
                             borderRadius: 5,
                             border: '1px solid #e1e1e1',
@@ -115,7 +155,23 @@ export default function Decoder({ profile }) {
                           <div>
                             <h4 className="mb-1">Test Decoder</h4>
                             <p className="mt-1 mb-2 text-tremor-default text-tremor-content">Input the raw data from the sensor in here to test the decoder function. </p>
-                            <TextInput value={payload} className="mb-1" onValueChange={setPayload} placeholder="02da2"></TextInput>
+                            <label className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>Raw Payload</label>
+                            <TextInput value={payload} className="mb-1" onValueChange={setPayload} placeholder="base64 e.g. AQIBGgAAAAAAAAA="></TextInput>
+                            <div className="flex items-center space-x-3">
+                              <Switch
+                                id="switch"
+                                name="switch"
+                                checked={isHexString}
+                                onChange={setIsHexString}
+                              />
+                              <label htmlFor="switch" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+                                Is Hex String{' '}
+                              </label>
+                            </div>
+                            <div className='mb-2'>
+                            <label className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>FPort</label>
+                            <NumberInput value={fPort} onValueChange={setFPort} />
+                            </div>
                             <Button variant="secondary" size='xs' onClick={onTestClick}>Test</Button>
                           </div>
                           <div>
@@ -134,17 +190,9 @@ export default function Decoder({ profile }) {
                       </TabPanel>
                     </TabPanels>
                   </TabGroup>
-                  </div>
-
-                
-              </div>
-              {/* */}
+                </div> }
             </div>
-            
-           
           </div>
-          
-        </Flex>
       </Card>
     </div>
   )

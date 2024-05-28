@@ -10,8 +10,8 @@ import { Link } from "react-router-dom";
 import { profileSchema } from './schema';
 
 export default function ProfileForm({ onCancel, profile }) {
-  const [disabled, setDisabled] = useState(false);
   const [sources, setSources] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -27,12 +27,13 @@ export default function ProfileForm({ onCancel, profile }) {
       return;
     }
     try {
-      setDisabled(true);
+      setLoading(true);
       await profileAPI.create(data);
       reset({ name: '', source: '' });
       onCancel();
-      setDisabled(false);
+      setLoading(false);
     } catch (err) {
+      setLoading(false);
       console.log(err);
     }
   };
@@ -94,8 +95,7 @@ export default function ProfileForm({ onCancel, profile }) {
           </div>
           <div className="footer mt-10">
             <Flex justifyContent="center" >
-              <Button variant="primary" type="submit" className='w-full'
-                  disabled={disabled}>Create Profile</Button>
+              <Button variant="primary" type="submit" className='w-full' loading={loading}>Create Profile</Button>
             </Flex>
           </div>
         </form>
