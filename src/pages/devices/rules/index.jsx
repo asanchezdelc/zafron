@@ -17,9 +17,10 @@ export default function RulesPage({device}) {
     try {
       let newRule;
       if (mode === 'edit') {
+
         newRule = await rulesAPI.update(rule._id, { ...ruleData, deviceId: device._id, serial: device.serial });
         const newRules = rules.map(r => {
-          if (r._id === ruleData._id) {
+          if (r._id === rule._id) {
             return newRule;
           }
           return r;
@@ -120,7 +121,7 @@ export default function RulesPage({device}) {
                     className="w-full max-w-xl transform overflow-hidden ring-tremor bg-white
                                       p-6 text-left align-middle shadow-tremor transition-all rounded-xl"
                   >
-                    <RuleForm capabilities={device.capabilities} onCancel={closeModal} onAction={onCreate} formMode={formMode} rule={rule} />
+                    <RuleForm deviceId={device._id} onCancel={closeModal} onAction={onCreate} formMode={formMode} rule={rule} />
                   </Dialog.Panel>
                 </Transition.Child>
               </div>

@@ -26,6 +26,10 @@ export const patchCapability = (deviceId, capability) => {
   });
 };
 
+export const getCapabilities = (deviceId) => {
+  return request(`${baseURL}/${deviceId}/capabilities`);
+}
+
 export const patchDevice = (deviceId, payload) => {
   return request(`${baseURL}/${deviceId}`, {
       method: 'PATCH',
@@ -37,8 +41,12 @@ export const fetchOne = (id) => {
   return request(`${baseURL}/${id}`);
 };
 
-export const fetchReadings = (id, page, limit) => {
-  return request(`${baseURL}/${id}/measurements?page=${page}&limit=${limit}`);
+export const fetchReadings = (id, page, limit, startDate, endDate) => {
+  const _baseUrl = `${baseURL}/${id}/measurements?page=${page}&limit=${limit}`;
+  if (startDate && endDate) {
+    return request(`${_baseUrl}&startDate=${startDate}&endDate=${endDate}`);
+  }
+  return request(`${_baseUrl}`);
 }
 
 export const fetchHistogram = (id) => {

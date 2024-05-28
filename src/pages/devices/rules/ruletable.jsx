@@ -116,6 +116,7 @@ export default function RulesTable({ rules, onDelete, onEdit }) {
           <TableHeaderCell>Threshold</TableHeaderCell>
           <TableHeaderCell>Action Type</TableHeaderCell>
           <TableHeaderCell>Last Triggered</TableHeaderCell>
+          <TableHeaderCell>Status</TableHeaderCell>
           <TableHeaderCell className='px-4 py-3 flex items-center justify-end'>Settings</TableHeaderCell>
         </TableRow>
       </TableHead>
@@ -133,7 +134,10 @@ export default function RulesTable({ rules, onDelete, onEdit }) {
             </TableCell>     
             <TableCell>
               { toFriendlyTime(rule.triggeredAt) }
-            </TableCell>       
+            </TableCell>
+            <TableCell>
+              { rule.enabled ? <Badge>Enabled</Badge> : <Badge color="red">Disabled</Badge>}
+            </TableCell>     
             <TableCell className='flex items-center justify-end'>
               <ActionsDropdown onDelete={() => onDelete(rule._id)} onEdit={() => onEdit(rule)} />
             </TableCell>  

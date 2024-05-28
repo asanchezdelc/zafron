@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { Title, TabGroup, 
   Flex, Text, Tab, 
   TabList, TabPanel, Grid,
@@ -7,7 +7,6 @@ import { Title, TabGroup,
   TabPanels,
   Icon,
   Button,
-  Card
 } from '@tremor/react';
 import Nav from '../../components/nav';
 import * as devicesAPI from '../../services/device';
@@ -19,7 +18,6 @@ import {
   BellAlertIcon, 
   Cog6ToothIcon, 
   CircleStackIcon,
-  CommandLineIcon,
   PlusCircleIcon
 } from '@heroicons/react/24/outline';
 import Spinner from '../../components/spinner';
@@ -165,7 +163,6 @@ export default function DeviceDetail() {
             const packet = new MQTTPacket({ topic, payload: message });
             
             if (device.serial === packet.getSerial()) {
-              console.log('device message received', packet.getSerial(), topic, packet.getCaps());
               setStatus(new Date().getTime());
               const currentCapabilities = capabilitiesRef.current;
               const newCapabilities = [];
@@ -207,7 +204,6 @@ export default function DeviceDetail() {
   }
 
   const onSwitchToggle = async (capability) => {
-    console.log('switch toggled', capability)
     // value
     const topic = `v1/${mqttClient.options.username}/things/${device.serial}/cmd/${capability.channel}`;
     const seq = Math.floor(Math.random() * 1000000);
@@ -225,7 +221,8 @@ export default function DeviceDetail() {
             <div>
               <Title>{name}</Title>
               <Text>
-                {device.serial}
+                {device.serial} {' '}
+                {device.profile && (<Link to={`/profiles/${device.profile._id}/settings`} className="text-blue-600">{`(${device.profile.name})`}</Link>)}
               </Text>
               {/* <CoffeeCup /> */}
             </div>
@@ -233,7 +230,7 @@ export default function DeviceDetail() {
           <div className='text-right w-1/2'>
           {isOnline ? <Badge color='green' icon={WifiIcon}>Online</Badge> : 
             <Badge color='rose'>Offline</Badge>}
-            <Text className='mt-2 text-xs'>Last Update: {toFriendlyTime(uplink)}</Text>
+            <Text className='mt-2 text-xs'>Last Seen: {toFriendlyTime(uplink)}</Text>
           </div>
         </Flex>
         <TabGroup className="mt-6" onIndexChange={onTabChange}>
