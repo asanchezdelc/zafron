@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { Text } from '@tremor/react';
 const protocols = [

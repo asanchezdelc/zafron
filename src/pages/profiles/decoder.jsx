@@ -14,13 +14,14 @@ import {
   Title,
   Select,
   SelectItem,
+  NumberInput,
+  Switch,
  } from '@tremor/react';
   import CodeEditor from '@uiw/react-textarea-code-editor';
   import rehypePrism from '@mapbox/rehype-prism';
   import * as profilesAPI from '../../services/profiles';
 
 import DecoderHelp from './help';
-import Spinner from '../../components/spinner';
 
 const decoders = [
   { type: 'cayennelpp', name: 'CayenneLPP' },
@@ -35,6 +36,8 @@ export default function Decoder({ profile }) {
   const [output, setOutput] = useState('');
   const [decoderType, setDecoderType] = useState('cayennelpp');
   const [saveLoading, setSaveLoading] = useState(false);
+  const [fPort, setFPort] = useState(1);
+  const [isHexString, setIsHexString] = useState(false);
 
   const onUpdateCode = async () => {
     setLoading(true);
@@ -52,13 +55,14 @@ export default function Decoder({ profile }) {
     setError(null);
     setOutput('');
     
+    console.log(payload);
     if (!payload) {
       console.log('Payload is required');
       return;
     }
 
     try {
-      const resp = await profilesAPI.decode(profile._id, { payload });
+      const resp = await profilesAPI.decode(profile._id, { payload: payload, fPort: fPort});
       if (resp.errors && resp.errors.length > 0) {
         setError(JSON.stringify(resp.errors, null, 5));
         return;
@@ -132,12 +136,10 @@ export default function Decoder({ profile }) {
                           placeholder="Please enter JS code."
                           onChange={(evn) => setCode(evn.target.value)}
                           padding={15}
-                          minHeight={8}
                           rehypePlugins={[
                             [rehypePrism, { ignoreMissing: true }],
                           ]}
                           style={{
-                            height: 600,
                             overflow: 'auto',
                             borderRadius: 5,
                             border: '1px solid #e1e1e1',
@@ -153,7 +155,23 @@ export default function Decoder({ profile }) {
                           <div>
                             <h4 className="mb-1">Test Decoder</h4>
                             <p className="mt-1 mb-2 text-tremor-default text-tremor-content">Input the raw data from the sensor in here to test the decoder function. </p>
-                            <TextInput value={payload} className="mb-1" onValueChange={setPayload} placeholder="02da2"></TextInput>
+                            <label className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>Raw Payload</label>
+                            <TextInput value={payload} className="mb-1" onValueChange={setPayload} placeholder="base64 e.g. AQIBGgAAAAAAAAA="></TextInput>
+                            <div className="flex items-center space-x-3">
+                              <Switch
+                                id="switch"
+                                name="switch"
+                                checked={isHexString}
+                                onChange={setIsHexString}
+                              />
+                              <label htmlFor="switch" className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+                                Is Hex String{' '}
+                              </label>
+                            </div>
+                            <div className='mb-2'>
+                            <label className='text-tremor-default font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong'>FPort</label>
+                            <NumberInput value={fPort} onValueChange={setFPort} />
+                            </div>
                             <Button variant="secondary" size='xs' onClick={onTestClick}>Test</Button>
                           </div>
                           <div>
