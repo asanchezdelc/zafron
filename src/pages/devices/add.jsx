@@ -37,6 +37,11 @@ export default function AddDevice({onCancel, onAction}) {
         setErrors('DevEUI must be 16 characters');
         return false;
       }
+
+      if (profile === '') {
+        setErrors('Select a profile');
+        return false;
+      }
     }
 
     if (serial.length < 6 ) {
