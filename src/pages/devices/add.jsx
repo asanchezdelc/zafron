@@ -13,13 +13,44 @@ export default function AddDevice({onCancel, onAction}) {
   let [serial, setSerial] = useState(generateSerial())
   let [name, setName] = useState(generateDeviceName())
   const [profiles, setProfiles] = useState([{}])
+  const [errors, setErrors] = useState('')
+
   const onAddDevice = async (e) => {
     e.preventDefault();
+    if (!validateForm()) {
+      setTimeout(() => {
+        setErrors('');
+      }, 2000)
+      return;
+    }
+    
     try {
       onAction({ name, type, serial, profile });
     } catch (err) {
       console.error("Error adding device:", err);
     }
+  }
+
+  const validateForm = () => {
+    if (type === 'lora') {
+      if (serial.length !== 16) {
+        setErrors('DevEUI must be 16 characters');
+        return false;
+      }
+    }
+
+    if (serial.length < 6 ) {
+      setErrors('Serial must be at least 6 characters and max 16');
+      return false;
+    } else if (name.length < 3) {
+      setErrors('Name must be at least 3 characters');
+      return false;
+    } else if (serial.length > 16) {
+      setErrors('Serial must be at most 16 characters');
+      return false;
+    }
+
+    return true;
   }
 
   const getSources = async () => {
@@ -32,17 +63,11 @@ export default function AddDevice({onCancel, onAction}) {
   }
 
   const validateSerial = (serial) => {
-    if (serial.length < 6) {
-      return false;
-    }
-
     serial = serial.toUpperCase();
     serial = serial.replace(/[^A-Z0-9]/g, '');
     serial = serial.trim();
 
     setSerial(serial);
-
-    console.log(serial);
 
     return true;
   }
@@ -76,6 +101,7 @@ export default function AddDevice({onCancel, onAction}) {
             </div>
         
           <form className='p-10'>
+            { errors && <div className="text-red-500 text-sm mb-4">{errors}</div> }
             <DeviceType onChange={setType} selected={type} />
             <div className="mb-6">
               <label className="block mb-2 text-sm font-medium text-gray-900">Name</label>
@@ -85,16 +111,8 @@ export default function AddDevice({onCancel, onAction}) {
               <label className="block mb-2 text-sm font-medium text-gray-900">
                 { type === 'lora' ? 'Device EUI' : 'Serial'}
               </label>
-              <TextInput value={serial} onChange={(e) => validateSerial(e.target.value)} placeholder="Device Serial" />
+              <TextInput value={serial} onChange={(e) => validateSerial(e.target.value)} placeholder="Device Serial or EUI" />
             </div>
-            {/* <div className="mb-6">
-              <label className="block mb-2 text-sm font-medium text-gray-900">Type</label>
-              <Select value={type} onValueChange={setType} defaultValue='mqtt'>
-                <SelectItem value="mqtt">MQTT</SelectItem>
-                <SelectItem value="lora">LoRaWAN</SelectItem>
-                <SelectItem value="http">HTTP</SelectItem>
-              </Select>
-            </div> */}
             { (type === 'http' || type === 'lora') &&  (
               <div className="mb-6">
                 <label className="block mb-2 text-sm font-medium text-gray-900">Select Profile</label>
