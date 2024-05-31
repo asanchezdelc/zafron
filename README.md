@@ -2,9 +2,22 @@
 
 A rudimentary and simple dashboard for devices such as Arduinos, ESP family, RaspberryPi, LoRaWAN, HTTP and more. This project was brought to life due to Cayenne EOL. It uses the Cayenne MQTT protocol to send data to the server. 
 
-[Documentation](https://zafron.dev/docs)
+[Documentation](https://zafron.dev/docs/intro)
 
 Get started quickly using [Zafron Cloud](https://zafron.dev)
+
+## Features
+- Device-to-Cloud communication (MQTT & HTTP)
+- Real-time data visualization
+- Device Registry
+- Device Logs
+- Rules & Alerts
+- Cloud-to-Device Commands
+- LoRaWAN support
+  - The Things Network, Chirpstack, Helium
+  - Device Profiles and Decoders
+- HTTP API
+- Ingest data via HTTP
 
 <img src="https://github.com/asanchezdelc/zafron/blob/main/docs/lander.png?raw=true" alt="Lander" width="500"/>
 <img src="https://github.com/asanchezdelc/zafron/blob/main/docs/logs.png?raw=true" alt="Logs" width="500"/>
@@ -54,8 +67,5 @@ mosquitto_pub -h localhost -t v1/thingscafe/things/device-d5f5/data/json -m "[{\
 ```
 
 
-## ToDo
-- Example code for ESP8266
-- Example code for NodeMCU
-- Example code for RaspberryPi
+
 
