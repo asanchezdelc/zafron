@@ -46,7 +46,7 @@ const LoraHero = ({ profile }) => {
       <div class="lora-container">
         <h2 class="text-2xl font-bold mb-2 text-gray-800">Configuring Your LoRa Device</h2>
         <p class="mb-4">You've successfully added your LoRa device. To start sending data and utilize our services, please follow these steps:</p>
-        
+        <p className="mb-2"><a href="https://zafron.dev/docs/lorawan/intro" className="text-blue-500">Getting Started Documentation </a></p>
         <div class="mb-4">
           <h3 class="text-xl font-bold text-gray-700">Step 1: Configure Your {source.provider} LoRa Network Server</h3>
           <p>Set up your LoRa device to communicate with Zafron:</p>
