@@ -26,6 +26,7 @@ export default function AddDevice({onCancel, onAction}) {
     
     try {
       onAction({ name, type, serial, profile });
+      //
     } catch (err) {
       console.error("Error adding device:", err);
     }
@@ -85,7 +86,7 @@ export default function AddDevice({onCancel, onAction}) {
     /* Use `initialFocus` to force initial focus to a specific ref. */
     <Dialog
       open={isOpen}
-      onClose={() => setIsOpen(false)}
+      onClose={() => onCancel(false)}
     >
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 w-screen overflow-y-auto">
@@ -130,8 +131,8 @@ export default function AddDevice({onCancel, onAction}) {
                 </div>)
               }
             
-            <Flex justifyContent="end" className="space-x-2 border-t pt-4 mt-8">
-              <Button variant="secondary" size='xs' onClick={() => onCancel(false)}>Cancel</Button>
+            <Flex justifyContent="between" className="space-x-2 border-t pt-4 mt-8">
+              <Button variant="secondary" size='xs' onClick={() => onCancel(false)} color="red">Cancel</Button>
               <Button variant="primary" size='xs' onClick={onAddDevice} className='mr-6'>Add Device</Button>
             </Flex>
          </form>
